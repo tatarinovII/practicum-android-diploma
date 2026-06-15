@@ -1,11 +1,11 @@
 [versions]
-
 # Build constants
 compileSdk = "36"
 java = "VERSION_17"
 material = "1.13.0"
 minSdk = "26"
 targetSdk = "33"
+koin = "4.1.1"
 
 # AndroidX
 appcompat = "1.7.1"
@@ -22,6 +22,9 @@ detekt = "1.23.8"
 detektTwitterComposeRules = "0.0.26"
 
 [libraries]
+# Koin
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 
 # AndroidX
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
