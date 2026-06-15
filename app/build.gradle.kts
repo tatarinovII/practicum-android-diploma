@@ -51,6 +51,10 @@ dependencies {
     implementation(libs.material)
     implementation(libs.constraintlayout)
 
+    // DI
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+
     testImplementation(libs.junit4)
     androidTestImplementation(libs.junit.ext)
     androidTestImplementation(libs.espresso.core)
