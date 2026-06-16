@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.team
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,17 +31,24 @@ fun TeamScreen() {
         "Кирилл Москаленко"
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         TopAppBar(
             modifier = Modifier.padding(top = 24.dp),
-            title = { Text(
-                modifier = Modifier.padding(
-                    top = 19.dp,
-                    bottom = 19.dp,
-                    end = 8.dp),
-                text = stringResource(id = R.string.team),
-                style = MaterialTheme.typography.titleLarge
-            )}
+            title = {
+                Text(
+                    modifier = Modifier.padding(
+                        top = 19.dp,
+                        bottom = 19.dp,
+                        end = 8.dp
+                    ),
+                    text = stringResource(id = R.string.title_team),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -47,7 +56,8 @@ fun TeamScreen() {
         Text(
             modifier = Modifier.padding(
                 vertical = 8.dp,
-                horizontal = 16.dp),
+                horizontal = 16.dp
+            ),
             text = stringResource(id = R.string.who_worked),
             style = MaterialTheme.typography.bodyLarge
         )
