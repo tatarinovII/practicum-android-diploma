@@ -23,23 +23,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.NavHostController
-import ru.practicum.android.diploma.R
+import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.practicum.android.diploma.ui.theme.Blue
 import ru.practicum.android.diploma.ui.theme.Grey
-
-data class BottomNavItem(
-    val route: Route,
-    val iconRes: Int,
-    val titleRes: Int
-)
-
-val bottomNavItems = listOf(
-    BottomNavItem(Route.Main, R.drawable.ic_main_24px, R.string.title_main),
-    BottomNavItem(Route.Favorites, R.drawable.ic_favorites_on__24px, R.string.title_favorites),
-    BottomNavItem(Route.Team, R.drawable.ic_team_24px, R.string.title_team)
-)
 
 @Composable
 fun BottomNavBar(
