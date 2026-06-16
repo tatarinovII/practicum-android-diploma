@@ -56,6 +56,7 @@ dependencies {
     // DI
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.androidx.ui.text)
 
     testImplementation(libs.junit4)
     androidTestImplementation(libs.junit.ext)
