@@ -6,6 +6,8 @@ material = "1.13.0"
 minSdk = "26"
 targetSdk = "33"
 koin = "4.1.1"
+composeBom = "2026.05.00"
+activityCompose = "1.9.2"
 
 # AndroidX
 appcompat = "1.7.1"
@@ -47,5 +49,14 @@ staticAnalysis-detektLibraries = { module = "io.gitlab.arturbosch.detekt:detekt-
 staticAnalysis-detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 staticAnalysis-detektTest = { module = "io.gitlab.arturbosch.detekt:detekt-test", version.ref = "detekt" }
 staticAnalysis-detektTwitterComposeRules = { module = "com.twitter.compose.rules:detekt", version.ref = "detektTwitterComposeRules" }
+
+#Compose
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 
 [bundles]
