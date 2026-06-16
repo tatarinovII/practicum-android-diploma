@@ -11,6 +11,7 @@ val PaddingSmall = 8.dp
 val LineHeightBig = 38.sp
 val LineHeightMedium = 26.sp
 val LineHeightSmall = 19.sp
+val LineHeightVerySmall = 16.sp
 
 val FontSizeBig = 32.sp
 val FontSizeMedium = 22.sp
