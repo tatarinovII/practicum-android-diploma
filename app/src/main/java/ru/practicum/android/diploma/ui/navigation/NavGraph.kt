@@ -48,8 +48,9 @@ fun AppNavHost() {
                 route = Route.VacancyDetail.route,
                 arguments = listOf(navArgument("vacancyId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val vacancyId = backStackEntry.arguments?.getString("vacancyId") ?: return@composable
-                // TODO: VacancyDetailScreen(vacancyId)
+                backStackEntry.arguments?.getString("vacancyId")?.let { vacancyId ->
+                    // TODO: VacancyDetailScreen(vacancyId)
+                }
             }
         }
     }
