@@ -48,6 +48,8 @@ kotlin {
 dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
 
     // UI layer libraries
     implementation(libs.material)
