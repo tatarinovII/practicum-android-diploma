@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.data.dto.filter_area
+package ru.practicum.android.diploma.data.dto.filterArea
 
 data class FilterAreaDto(
     val id: Int,

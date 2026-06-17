@@ -1,7 +1,7 @@
-package ru.practicum.android.diploma.data.dto.vacancy_detail
+package ru.practicum.android.diploma.data.dto.vacancyDetail
 
-import ru.practicum.android.diploma.data.dto.filter_area.FilterAreaDto
-import ru.practicum.android.diploma.data.dto.filter_industry.FilterIndustryDto
+import ru.practicum.android.diploma.data.dto.filterArea.FilterAreaDto
+import ru.practicum.android.diploma.data.dto.filterIndustry.FilterIndustryDto
 
 data class VacancyDetailDto(
     val id: String,
