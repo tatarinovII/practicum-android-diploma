@@ -12,8 +12,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import ru.practicum.android.diploma.ui.favorites.FavoritesScreen
+import ru.practicum.android.diploma.ui.filtration.FiltrationScreen
 import ru.practicum.android.diploma.ui.main.MainScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
+import ru.practicum.android.diploma.ui.vacancy.VacancyScreen
 
 @Composable
 fun AppNavHost() {
@@ -34,20 +36,20 @@ fun AppNavHost() {
             startDestination = Route.MAIN.name,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Route.MAIN.name) { MainScreen() }
+            composable(Route.MAIN.name) { MainScreen(navController) }
             composable(Route.FAVORITES.name) { FavoritesScreen() }
             composable(Route.TEAM.name) { TeamScreen() }
 
             // Экраны без нижней панели
             composable(Route.FILTER.name) {
-                // TODO: FiltersScreen()
+                FiltrationScreen()
             }
             composable(
                 route = "${Route.VACANCY.name}/{vacancyId}",
                 arguments = listOf(navArgument("vacancyId") { type = NavType.StringType })
             ) { backStackEntry ->
                 backStackEntry.arguments?.getString("vacancyId")?.let { vacancyId ->
-                    // TODO: VacancyDetailScreen(vacancyId)
+                    VacancyScreen(vacancyId)
                 }
             }
         }
