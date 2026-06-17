@@ -71,4 +71,14 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.activity.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    //Retrofit
+    implementation(libs.retrofit)
+
+    //Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+
+    //GSON
+    implementation(libs.gson)
+    implementation(libs.converter.gson)
 }
