@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.data.dto.vacancyResponse
+package ru.practicum.android.diploma.data.dto.vacancyresponse
 
 data class VacancyDto(
     val found: Int,
