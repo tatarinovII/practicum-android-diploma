@@ -22,11 +22,11 @@ import ru.practicum.android.diploma.ui.theme.MyAppTheme
 fun TeamScreen() {
 
     val developers = listOf(
+        "Максим Квасов",
         "Михаил Абрамук",
         "Александр Орлов",
         "Илья Татаринов",
-        "Кирилл Москаленко",
-        "Максим Квасов"
+        "Кирилл Москаленко"
     )
 
     Column(modifier = Modifier.fillMaxSize()) {
