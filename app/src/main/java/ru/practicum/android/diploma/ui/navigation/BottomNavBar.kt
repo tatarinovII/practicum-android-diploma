@@ -50,11 +50,11 @@ fun BottomNavBar(
             containerColor = MaterialTheme.colorScheme.secondary
         ) {
             bottomNavItems.forEach { item ->
-                val selected = currentDestination?.hierarchy?.any { it.route == item.route.route } == true
+                val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
                 NavigationBarItem(
                     selected = selected,
                     onClick = {
-                        navController.navigate(item.route.route) {
+                        navController.navigate(item.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }

@@ -20,32 +20,30 @@ fun AppNavHost() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val showBottomBar = currentRoute in bottomBarRoutes
+    val showBottomBar = currentRoute in bottomBarRoute
 
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
                 BottomNavBar(navController = navController)
-            } else {
-                null
             }
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Route.Main.route,
+            startDestination = Route.MAIN.name,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Route.Main.route) { MainScreen() }
-            composable(Route.Favorites.route) { FavoritesScreen() }
-            composable(Route.Team.route) { TeamScreen() }
+            composable(Route.MAIN.name) { MainScreen() }
+            composable(Route.FAVORITES.name) { FavoritesScreen() }
+            composable(Route.TEAM.name) { TeamScreen() }
 
             // Экраны без нижней панели
-            composable(Route.Filters.route) {
+            composable(Route.FILTER.name) {
                 // TODO: FiltersScreen()
             }
             composable(
-                route = Route.VacancyDetail.route,
+                route = "${Route.VACANCY.name}/{vacancyId}",
                 arguments = listOf(navArgument("vacancyId") { type = NavType.StringType })
             ) { backStackEntry ->
                 backStackEntry.arguments?.getString("vacancyId")?.let { vacancyId ->
