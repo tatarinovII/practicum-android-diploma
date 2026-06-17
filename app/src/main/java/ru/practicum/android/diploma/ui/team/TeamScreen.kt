@@ -42,7 +42,7 @@ fun TeamScreen() {
                     top = 19.dp,
                     bottom = 19.dp,
                     end = 8.dp),
-                text = stringResource(id = R.string.team),
+                text = stringResource(id = R.string.title_team),
                 style = MaterialTheme.typography.titleLarge
             )},
             colors = TopAppBarDefaults.topAppBarColors(
