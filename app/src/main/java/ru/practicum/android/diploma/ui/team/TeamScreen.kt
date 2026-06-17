@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.team
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,22 +31,24 @@ fun TeamScreen() {
         "Кирилл Москаленко"
     )
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-    ) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)) {
+
         TopAppBar(
             modifier = Modifier.padding(top = 24.dp),
-            title = {
-                Text(
-                    modifier = Modifier.padding(
-                        top = 19.dp,
-                        bottom = 19.dp,
-                        end = 8.dp
-                    ),
-                    text = stringResource(id = R.string.title_team),
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
+            title = { Text(
+                modifier = Modifier.padding(
+                    top = 19.dp,
+                    bottom = 19.dp,
+                    end = 8.dp),
+                text = stringResource(id = R.string.title_team),
+                style = MaterialTheme.typography.titleLarge
+            )},
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                titleContentColor = MaterialTheme.colorScheme.primary
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -52,10 +56,10 @@ fun TeamScreen() {
         Text(
             modifier = Modifier.padding(
                 vertical = 8.dp,
-                horizontal = 16.dp
-            ),
+                horizontal = 16.dp),
             text = stringResource(id = R.string.who_worked),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -70,7 +74,8 @@ fun GetDevelopers(developers: List<String>) {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = developer,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
