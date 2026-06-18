@@ -76,4 +76,14 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.foundation)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    //Retrofit
+    implementation(libs.retrofit)
+
+    //Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+
+    //GSON
+    implementation(libs.gson)
+    implementation(libs.converter.gson)
 }
