@@ -2,6 +2,7 @@ package ru.practicum.android.diploma.di
 
 import androidx.room.Room
 import com.google.gson.Gson
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -9,7 +10,6 @@ import ru.practicum.android.diploma.data.db.AppDatabase
 import ru.practicum.android.diploma.data.db.converter.Converters
 import ru.practicum.android.diploma.data.db.dao.VacancyDao
 import ru.practicum.android.diploma.data.network.VacancyApi
-import org.koin.android.ext.koin.androidContext
 
 val dataModule = module {
     single<VacancyApi> {
