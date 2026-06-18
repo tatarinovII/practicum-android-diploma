@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("ru.practicum.android.diploma.plugins.developproperties")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("kotlin-kapt")
 }
 
 android {
@@ -36,6 +37,9 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+    kapt {
+        correctErrorTypes = true
     }
 }
 
@@ -86,4 +90,9 @@ dependencies {
     //GSON
     implementation(libs.gson)
     implementation(libs.converter.gson)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 }
