@@ -4,31 +4,80 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import ru.practicum.android.diploma.data.NetworkClient
-import ru.practicum.android.diploma.data.dto.Response
+import ru.practicum.android.diploma.data.NetworkResult
+import ru.practicum.android.diploma.data.dto.VacancyRequest
 import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
 import ru.practicum.android.diploma.data.dto.filterindustry.FilterIndustryDto
 import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
 import ru.practicum.android.diploma.data.dto.vacancyresponse.VacancyDto
+import java.io.IOException
 
-class RetrofitNetworkClient(private val context: Context, private val vacancyApi: VacancyApi) : NetworkClient {
+class RetrofitNetworkClient(
+    private val context: Context,
+    private val vacancyApi: VacancyApi
+) : NetworkClient {
 
-    override suspend fun requestFilterArea(dto: FilterAreaDto): Response {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun requestFilterIndustry(dto: FilterIndustryDto): Response {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun requestVacancyResponse(dto: VacancyDto): Response {
+    override suspend fun searchVacancies(request: VacancyRequest): NetworkResult<VacancyDto> {
         if (!isConnected()) {
-            return Response().apply { resultCode = -1 }
+            return NetworkResult.NoInternet
         }
-        TODO("Not yet implemented")
+        return try {
+            val response = vacancyApi.getVacancies(
+                text = request.text,
+                area = request.area,
+                industry = request.industry,
+                salary = request.salary,
+                page = request.page,
+                onlyWithSalary = request.onlyWithSalary
+            )
+            NetworkResult.Success(response)
+        } catch (e: IOException) {
+            NetworkResult.Error(500, "Ошибка сети: ${e.message}")
+        } catch (e: Exception) {
+            NetworkResult.Error(500, "Неизвестная ошибка: ${e.message}")
+        }
     }
 
-    override suspend fun requestVacancyDetail(dto: VacancyDetailDto): Response {
-        TODO("Not yet implemented")
+    override suspend fun getVacancyDetail(vacancyId: String): NetworkResult<VacancyDetailDto> {
+        if (!isConnected()) {
+            return NetworkResult.NoInternet
+        }
+        return try {
+            val response = vacancyApi.getVacancyDetail(vacancyId)
+            NetworkResult.Success(response)
+        } catch (e: IOException) {
+            NetworkResult.Error(500, "Ошибка сети: ${e.message}")
+        } catch (e: Exception) {
+            NetworkResult.Error(500, "Неизвестная ошибка: ${e.message}")
+        }
+    }
+
+    override suspend fun getAreas(): NetworkResult<List<FilterAreaDto>> {
+        if (!isConnected()) {
+            return NetworkResult.NoInternet
+        }
+        return try {
+            val response = vacancyApi.getAreas()
+            NetworkResult.Success(response)
+        } catch (e: IOException) {
+            NetworkResult.Error(500, "Ошибка сети: ${e.message}")
+        } catch (e: Exception) {
+            NetworkResult.Error(500, "Неизвестная ошибка: ${e.message}")
+        }
+    }
+
+    override suspend fun getIndustries(): NetworkResult<List<FilterIndustryDto>> {
+        if (!isConnected()) {
+            return NetworkResult.NoInternet
+        }
+        return try {
+            val response = vacancyApi.getIndustries()
+            NetworkResult.Success(response)
+        } catch (e: IOException) {
+            NetworkResult.Error(500, "Ошибка сети: ${e.message}")
+        } catch (e: Exception) {
+            NetworkResult.Error(500, "Неизвестная ошибка: ${e.message}")
+        }
     }
 
     private fun isConnected(): Boolean {
@@ -43,6 +92,4 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         }
         return false
     }
-
-
 }
