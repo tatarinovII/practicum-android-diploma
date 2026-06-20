@@ -3,32 +3,111 @@ package ru.practicum.android.diploma.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.data.NetworkClient
-import ru.practicum.android.diploma.data.dto.Response
-import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
-import ru.practicum.android.diploma.data.dto.filterindustry.FilterIndustryDto
-import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
-import ru.practicum.android.diploma.data.dto.vacancyresponse.VacancyDto
+import ru.practicum.android.diploma.data.network.api.VacancyApi
+import android.util.Log
 
 class RetrofitNetworkClient(private val context: Context, private val vacancyApi: VacancyApi) : NetworkClient {
 
-    override suspend fun requestFilterArea(dto: FilterAreaDto): Response {
-        TODO("Not yet implemented")
-    }
+    //пока что оставил свой токен
+    private val token: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
 
-    override suspend fun requestFilterIndustry(dto: FilterIndustryDto): Response {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun requestVacancyResponse(dto: VacancyDto): Response {
+    override suspend fun requestFilterArea(): Response {
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
-        TODO("Not yet implemented")
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val areas = vacancyApi.getArea(token)
+
+                // Можно поменять параметры вывода в Log
+                Log.i("areas", areas[0].areas[0].name)
+
+                if (areas.isEmpty()) {
+                    Response().apply { resultCode = 400 }
+                } else {
+                    Response().apply { resultCode = 200 }
+                }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = 500 }
+            }
+        }
     }
 
-    override suspend fun requestVacancyDetail(dto: VacancyDetailDto): Response {
-        TODO("Not yet implemented")
+    override suspend fun requestFilterIndustry(): Response {
+        if (!isConnected()) {
+            return Response().apply { resultCode = -1 }
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val industries = vacancyApi.getIndustry(token)
+
+                // Можно поменять параметры вывода в Log
+                Log.i("industries", industries[0].name)
+
+                if (industries.isEmpty()) {
+                    Response().apply { resultCode = 400 }
+                } else {
+                    Response().apply { resultCode = 200 }
+                }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = 500 }
+            }
+        }
+    }
+
+    override suspend fun requestVacancyResponse(dto: VacancyRequest): Response {
+        if (!isConnected()) {
+            return Response().apply { resultCode = -1 }
+        }
+
+        return  withContext(Dispatchers.IO) {
+            try {
+                val vacancies = vacancyApi.searchVacancy(token, dto.options)
+                vacancies.items.forEach {
+
+                    // Можно поменять параметры вывода в Log
+                    Log.i("vacancies", it.id)
+                }
+
+                if (vacancies.items.isEmpty()) {
+                    Response().apply { resultCode = 400 }
+                } else {
+                    Response().apply { resultCode = 200 }
+                }
+
+            } catch (e: Throwable) {
+                Log.i("Throwable", e.message.toString())
+                Response().apply { resultCode = 500 }
+
+            }
+        }
+    }
+
+    override suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response {
+        return  withContext(Dispatchers.IO) {
+            try {
+                val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
+
+                // Можно поменять параметры вывода в Log
+                Log.i("vacancyDetail", vacancyDetail.description)
+                Response().apply { resultCode = 200 }
+
+            } catch (e: Throwable) {
+                if (e.message.toString() == "HTTP 404 Not Found") {
+                    Log.i("Throwable", e.message.toString())
+                    Response().apply { resultCode = 404 }
+                }
+                else {
+                    Response().apply { resultCode = 500 }
+                }
+
+            }
+        }
     }
 
     private fun isConnected(): Boolean {
@@ -43,6 +122,5 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         }
         return false
     }
-
 
 }

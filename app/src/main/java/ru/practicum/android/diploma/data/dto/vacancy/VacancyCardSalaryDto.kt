@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.data.dto.vacancyresponse
+package ru.practicum.android.diploma.data.dto.vacancy
 
 import ru.practicum.android.diploma.domain.models.Currency
 
