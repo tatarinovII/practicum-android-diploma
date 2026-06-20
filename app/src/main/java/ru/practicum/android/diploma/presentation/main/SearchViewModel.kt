@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
+import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.util.debounce
 
@@ -63,49 +64,57 @@ class SearchViewModel(
 
     private fun performSearch(query: String, resetPaging: Boolean) {
         viewModelScope.launch {
-            val currentState = _uiState.value
-            val page = if (resetPaging) 0 else currentState.currentPage + 1
+            val page = if (resetPaging) 0 else _uiState.value.currentPage + 1
+            setLoadingState(resetPaging)
 
-            _uiState.update {
-                it.copy(
-                    isLoading = resetPaging,
-                    isLoadingMore = !resetPaging,
-                    error = null
-                )
-            }
-
-            val result = searchInteractor(
-                text = query,
-                page = page
-            )
-
-            _uiState.update { state ->
-                val newState = state.copy(
-                    isLoading = false,
-                    isLoadingMore = false
-                )
-                result.fold(
-                    onSuccess = { searchResult ->
-                        val newVacancies = if (resetPaging) {
-                            searchResult.vacancies
-                        } else {
-                            state.vacancies + searchResult.vacancies
-                        }
-                        newState.copy(
-                            vacancies = newVacancies,
-                            currentPage = searchResult.currentPage,
-                            totalPages = searchResult.totalPages,
-                            totalFound = searchResult.totalFound,
-                            error = null
-                        )
-                    },
-                    onFailure = { exception ->
-                        newState.copy(
-                            error = exception.message ?: "Произошла ошибка",
-                        )
-                    }
-                )
-            }
+            val result = searchInteractor(text = query, page = page)
+            handleSearchResult(result, resetPaging)
         }
+    }
+
+    private fun setLoadingState(resetPaging: Boolean) {
+        _uiState.update {
+            it.copy(
+                isLoading = resetPaging,
+                isLoadingMore = !resetPaging,
+                error = null
+            )
+        }
+    }
+
+    private fun handleSearchResult(result: Result<SearchResult>, resetPaging: Boolean) {
+        _uiState.update { state ->
+            val newState = state.copy(isLoading = false, isLoadingMore = false)
+            result.fold(
+                onSuccess = { searchResult -> handleSuccess(searchResult, state, resetPaging, newState) },
+                onFailure = { exception -> handleFailure(exception, newState) }
+            )
+        }
+    }
+
+    private fun handleSuccess(
+        searchResult: SearchResult,
+        state: SearchUiState,
+        resetPaging: Boolean,
+        newState: SearchUiState
+    ): SearchUiState {
+        val newVacancies = if (resetPaging) {
+            searchResult.vacancies
+        } else {
+            state.vacancies + searchResult.vacancies
+        }
+        return newState.copy(
+            vacancies = newVacancies,
+            currentPage = searchResult.currentPage,
+            totalPages = searchResult.totalPages,
+            totalFound = searchResult.totalFound,
+            error = null
+        )
+    }
+
+    private fun handleFailure(exception: Throwable, newState: SearchUiState): SearchUiState {
+        return newState.copy(
+            error = exception.message ?: "Произошла ошибка"
+        )
     }
 }
