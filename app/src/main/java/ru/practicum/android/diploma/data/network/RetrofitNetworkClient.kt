@@ -15,19 +15,33 @@ import java.io.IOException
 
 private const val ERROR_CODE_INTERNAL = 500
 private const val ERROR_MESSAGE_NETWORK = "Ошибка сети: "
-private const val ERROR_MESSAGE_UNKNOWN = "Неизвестная ошибка: "
+private const val ERROR_MESSAGE_HTTP = "Ошибка HTTP"
 
 class RetrofitNetworkClient(
     private val context: Context,
     private val vacancyApi: VacancyApi
 ) : NetworkClient {
 
-    override suspend fun searchVacancies(request: VacancyRequest): NetworkResult<VacancyDto> {
+    private val connectivityManager by lazy {
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    }
+
+    private suspend fun <T> safeApiCall(block: suspend () -> T): NetworkResult<T> {
         if (!isConnected()) {
             return NetworkResult.NoInternet
         }
         return try {
-            val response = vacancyApi.getVacancies(
+            NetworkResult.Success(block.invoke())
+        } catch (e: IOException) {
+            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
+        } catch (e: HttpException) {
+            NetworkResult.Error(e.code(), e.message() ?: ERROR_MESSAGE_HTTP)
+        }
+    }
+
+    override suspend fun searchVacancies(request: VacancyRequest): NetworkResult<VacancyDto> =
+        safeApiCall {
+            vacancyApi.getVacancies(
                 text = request.text,
                 area = request.area,
                 industry = request.industry,
@@ -35,74 +49,23 @@ class RetrofitNetworkClient(
                 page = request.page,
                 onlyWithSalary = request.onlyWithSalary
             )
-            NetworkResult.Success(response)
-        } catch (e: IOException) {
-            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
-        } catch (e: HttpException) {
-            NetworkResult.Error(e.code(), e.message() ?: "Ошибка HTTP")
-        } catch (e: Exception) {
-            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_UNKNOWN + e.message)
         }
-    }
 
-    override suspend fun getVacancyDetail(vacancyId: String): NetworkResult<VacancyDetailDto> {
-        if (!isConnected()) {
-            return NetworkResult.NoInternet
-        }
-        return try {
-            val response = vacancyApi.getVacancyDetail(vacancyId)
-            NetworkResult.Success(response)
-        } catch (e: IOException) {
-            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
-        } catch (e: HttpException) {
-            NetworkResult.Error(e.code(), e.message() ?: "Ошибка HTTP")
-        } catch (e: Exception) {
-            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_UNKNOWN + e.message)
-        }
-    }
+    override suspend fun getVacancyDetail(vacancyId: String): NetworkResult<VacancyDetailDto> =
+        safeApiCall { vacancyApi.getVacancyDetail(vacancyId) }
 
-    override suspend fun getAreas(): NetworkResult<List<FilterAreaDto>> {
-        if (!isConnected()) {
-            return NetworkResult.NoInternet
-        }
-        return try {
-            val response = vacancyApi.getAreas()
-            NetworkResult.Success(response)
-        } catch (e: IOException) {
-            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
-        } catch (e: HttpException) {
-            NetworkResult.Error(e.code(), e.message() ?: "Ошибка HTTP")
-        } catch (e: Exception) {
-            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_UNKNOWN + e.message)
-        }
-    }
+    override suspend fun getAreas(): NetworkResult<List<FilterAreaDto>> =
+        safeApiCall { vacancyApi.getAreas() }
 
-    override suspend fun getIndustries(): NetworkResult<List<FilterIndustryDto>> {
-        if (!isConnected()) {
-            return NetworkResult.NoInternet
-        }
-        return try {
-            val response = vacancyApi.getIndustries()
-            NetworkResult.Success(response)
-        } catch (e: IOException) {
-            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
-        } catch (e: HttpException) {
-            NetworkResult.Error(e.code(), e.message() ?: "Ошибка HTTP")
-        } catch (e: Exception) {
-            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_UNKNOWN + e.message)
-        }
-    }
+    override suspend fun getIndustries(): NetworkResult<List<FilterIndustryDto>> =
+        safeApiCall { vacancyApi.getIndustries() }
 
     private fun isConnected(): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        if (capabilities != null) {
-            when {
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> return true
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> return true
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> return true
-            }
-        }
-        return false
+        return capabilities?.let {
+            it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                it.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+        } ?: false
     }
 }

@@ -81,22 +81,22 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.material.icons.extended)
 
-    //Coil
+    // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
 
-    //Okhttp
+    // Okhttp
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
 
-    //Retrofit
+    // Retrofit
     implementation(libs.retrofit)
 
-    //Coroutines
+    // Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
-    //GSON
+    // GSON
     implementation(libs.gson)
     implementation(libs.converter.gson)
 

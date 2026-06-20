@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import ru.practicum.android.diploma.domain.models.Vacancy
 
+private const val MIN_SIZE = 3
+
 @Composable
 fun VacancyList(
     vacancies: List<Vacancy>,
@@ -36,7 +38,7 @@ fun VacancyList(
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .filter { index ->
                 index != null &&
-                    index >= vacancies.size - 3 &&
+                    index >= vacancies.size - MIN_SIZE &&
                     !isLoadingMore &&
                     vacancies.isNotEmpty()
             }
