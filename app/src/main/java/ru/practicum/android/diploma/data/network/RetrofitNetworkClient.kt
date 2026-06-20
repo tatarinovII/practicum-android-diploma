@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import retrofit2.HttpException
 import ru.practicum.android.diploma.data.NetworkClient
 import ru.practicum.android.diploma.data.NetworkResult
 import ru.practicum.android.diploma.data.dto.VacancyRequest
@@ -11,6 +12,10 @@ import ru.practicum.android.diploma.data.dto.filterindustry.FilterIndustryDto
 import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
 import ru.practicum.android.diploma.data.dto.vacancyresponse.VacancyDto
 import java.io.IOException
+
+private const val ERROR_CODE_INTERNAL = 500
+private const val ERROR_MESSAGE_NETWORK = "Ошибка сети: "
+private const val ERROR_MESSAGE_UNKNOWN = "Неизвестная ошибка: "
 
 class RetrofitNetworkClient(
     private val context: Context,
@@ -32,9 +37,11 @@ class RetrofitNetworkClient(
             )
             NetworkResult.Success(response)
         } catch (e: IOException) {
-            NetworkResult.Error(500, "Ошибка сети: ${e.message}")
+            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
+        } catch (e: HttpException) {
+            NetworkResult.Error(e.code(), e.message() ?: "Ошибка HTTP")
         } catch (e: Exception) {
-            NetworkResult.Error(500, "Неизвестная ошибка: ${e.message}")
+            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_UNKNOWN + e.message)
         }
     }
 
@@ -46,9 +53,11 @@ class RetrofitNetworkClient(
             val response = vacancyApi.getVacancyDetail(vacancyId)
             NetworkResult.Success(response)
         } catch (e: IOException) {
-            NetworkResult.Error(500, "Ошибка сети: ${e.message}")
+            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
+        } catch (e: HttpException) {
+            NetworkResult.Error(e.code(), e.message() ?: "Ошибка HTTP")
         } catch (e: Exception) {
-            NetworkResult.Error(500, "Неизвестная ошибка: ${e.message}")
+            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_UNKNOWN + e.message)
         }
     }
 
@@ -60,9 +69,11 @@ class RetrofitNetworkClient(
             val response = vacancyApi.getAreas()
             NetworkResult.Success(response)
         } catch (e: IOException) {
-            NetworkResult.Error(500, "Ошибка сети: ${e.message}")
+            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
+        } catch (e: HttpException) {
+            NetworkResult.Error(e.code(), e.message() ?: "Ошибка HTTP")
         } catch (e: Exception) {
-            NetworkResult.Error(500, "Неизвестная ошибка: ${e.message}")
+            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_UNKNOWN + e.message)
         }
     }
 
@@ -74,9 +85,11 @@ class RetrofitNetworkClient(
             val response = vacancyApi.getIndustries()
             NetworkResult.Success(response)
         } catch (e: IOException) {
-            NetworkResult.Error(500, "Ошибка сети: ${e.message}")
+            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
+        } catch (e: HttpException) {
+            NetworkResult.Error(e.code(), e.message() ?: "Ошибка HTTP")
         } catch (e: Exception) {
-            NetworkResult.Error(500, "Неизвестная ошибка: ${e.message}")
+            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_UNKNOWN + e.message)
         }
     }
 
