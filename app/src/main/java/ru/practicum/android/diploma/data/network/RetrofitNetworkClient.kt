@@ -11,7 +11,7 @@ import android.util.Log
 
 class RetrofitNetworkClient(private val context: Context, private val vacancyApi: VacancyApi) : NetworkClient {
 
-    //пока что оставил свой токен
+    // пока что оставил свой токен
     private val token: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
 
     override suspend fun requestFilterArea(): Response {
@@ -65,11 +65,10 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
             return Response().apply { resultCode = -1 }
         }
 
-        return  withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             try {
                 val vacancies = vacancyApi.searchVacancy(token, dto.options)
                 vacancies.items.forEach {
-
                     // Можно поменять параметры вывода в Log
                     Log.i("vacancies", it.id)
                 }
@@ -101,8 +100,7 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
                 if (e.message.toString() == "HTTP 404 Not Found") {
                     Log.i("Throwable", e.message.toString())
                     Response().apply { resultCode = 404 }
-                }
-                else {
+                } else {
                     Response().apply { resultCode = 500 }
                 }
 
