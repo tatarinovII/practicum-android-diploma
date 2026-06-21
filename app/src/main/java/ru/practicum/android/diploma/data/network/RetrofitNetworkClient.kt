@@ -8,6 +8,11 @@ import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.data.NetworkClient
 import ru.practicum.android.diploma.data.network.api.VacancyApi
 import android.util.Log
+import ru.practicum.android.diploma.data.network.ResponseCode.BAD_REQUEST
+import ru.practicum.android.diploma.data.network.ResponseCode.NOT_FOUND
+import ru.practicum.android.diploma.data.network.ResponseCode.NO_INTERNET
+import ru.practicum.android.diploma.data.network.ResponseCode.SERVER_ERROR
+import ru.practicum.android.diploma.data.network.ResponseCode.SUCCESS
 
 class RetrofitNetworkClient(private val context: Context, private val vacancyApi: VacancyApi) : NetworkClient {
 
@@ -119,13 +124,5 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
             }
         }
         return false
-    }
-
-    companion object {
-        const val NO_INTERNET = -1
-        const val SUCCESS = 200
-        const val BAD_REQUEST = 400
-        const val NOT_FOUND = 404
-        const val SERVER_ERROR = 500
     }
 }
