@@ -13,7 +13,10 @@ import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
 interface VacancyApi {
     @Headers("Content-Type: application/json")
     @GET("vacancies")
-    suspend fun searchVacancy(@Header("Authorization") token: String, @QueryMap options: Map<String, String>): VacancyDto
+    suspend fun searchVacancy(
+        @Header("Authorization") token: String,
+        @QueryMap options: Map<String, String>
+    ): VacancyDto
 
     @Headers("Content-Type: application/json")
     @GET("areas")
@@ -25,5 +28,8 @@ interface VacancyApi {
 
     @Headers("Content-Type: application/json")
     @GET("vacancies/{id}")
-    suspend fun getVacancyDetail(@Header("Authorization") token: String, @Path("id") vacancyId: String): VacancyDetailDto
+    suspend fun getVacancyDetail(
+        @Header("Authorization") token: String,
+        @Path("id") vacancyId: String
+    ): VacancyDetailDto
 }
