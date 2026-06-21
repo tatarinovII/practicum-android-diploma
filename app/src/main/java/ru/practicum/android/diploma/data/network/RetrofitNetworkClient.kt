@@ -16,7 +16,7 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
 
     override suspend fun requestFilterArea(): Response {
         if (!isConnected()) {
-            return Response().apply { resultCode = -1 }
+            return Response().apply { resultCode = NO_INTERNET }
         }
 
         return withContext(Dispatchers.IO) {
@@ -27,19 +27,19 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
                 Log.i("areas", areas[0].areas[0].name)
 
                 if (areas.isEmpty()) {
-                    Response().apply { resultCode = 400 }
+                    Response().apply { resultCode = BAD_REQUEST }
                 } else {
-                    Response().apply { resultCode = 200 }
+                    Response().apply { resultCode = SUCCESS }
                 }
             } catch (e: Throwable) {
-                Response().apply { resultCode = 500 }
+                Response().apply { resultCode = SERVER_ERROR }
             }
         }
     }
 
     override suspend fun requestFilterIndustry(): Response {
         if (!isConnected()) {
-            return Response().apply { resultCode = -1 }
+            return Response().apply { resultCode = NO_INTERNET }
         }
 
         return withContext(Dispatchers.IO) {
@@ -50,19 +50,19 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
                 Log.i("industries", industries[0].name)
 
                 if (industries.isEmpty()) {
-                    Response().apply { resultCode = 400 }
+                    Response().apply { resultCode = BAD_REQUEST }
                 } else {
-                    Response().apply { resultCode = 200 }
+                    Response().apply { resultCode = SUCCESS }
                 }
             } catch (e: Throwable) {
-                Response().apply { resultCode = 500 }
+                Response().apply { resultCode = SERVER_ERROR }
             }
         }
     }
 
     override suspend fun requestVacancyResponse(dto: VacancyRequest): Response {
         if (!isConnected()) {
-            return Response().apply { resultCode = -1 }
+            return Response().apply { resultCode = NO_INTERNET }
         }
 
         return withContext(Dispatchers.IO) {
@@ -74,34 +74,34 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
                 }
 
                 if (vacancies.items.isEmpty()) {
-                    Response().apply { resultCode = 400 }
+                    Response().apply { resultCode = BAD_REQUEST }
                 } else {
-                    vacancies.apply { resultCode = 200 }
+                    vacancies.apply { resultCode = SUCCESS }
                 }
 
             } catch (e: Throwable) {
                 Log.i("Throwable", e.message.toString())
-                Response().apply { resultCode = 500 }
+                Response().apply { resultCode = SERVER_ERROR }
 
             }
         }
     }
 
     override suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response {
-        return  withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             try {
                 val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
 
                 // Можно поменять параметры вывода в Log
                 Log.i("vacancyDetail", vacancyDetail.description)
-                Response().apply { resultCode = 200 }
+                Response().apply { resultCode = SUCCESS }
 
             } catch (e: Throwable) {
                 if (e.message.toString() == "HTTP 404 Not Found") {
                     Log.i("Throwable", e.message.toString())
-                    Response().apply { resultCode = 404 }
+                    Response().apply { resultCode = NOT_FOUND }
                 } else {
-                    Response().apply { resultCode = 500 }
+                    Response().apply { resultCode = SERVER_ERROR }
                 }
 
             }
@@ -121,4 +121,11 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         return false
     }
 
+    companion object {
+        const val NO_INTERNET = -1
+        const val SUCCESS = 200
+        const val BAD_REQUEST = 400
+        const val NOT_FOUND = 404
+        const val SERVER_ERROR = 500
+    }
 }
