@@ -3,69 +3,124 @@ package ru.practicum.android.diploma.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import retrofit2.HttpException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.data.NetworkClient
-import ru.practicum.android.diploma.data.NetworkResult
-import ru.practicum.android.diploma.data.dto.VacancyRequest
-import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
-import ru.practicum.android.diploma.data.dto.filterindustry.FilterIndustryDto
-import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
-import ru.practicum.android.diploma.data.dto.vacancyresponse.VacancyDto
-import java.io.IOException
+import ru.practicum.android.diploma.data.network.api.VacancyApi
+import android.util.Log
 
-private const val ERROR_CODE_INTERNAL = 500
-private const val ERROR_MESSAGE_NETWORK = "Ошибка сети: "
-private const val ERROR_MESSAGE_HTTP = "Ошибка HTTP"
+class RetrofitNetworkClient(private val context: Context, private val vacancyApi: VacancyApi) : NetworkClient {
 
-class RetrofitNetworkClient(
-    private val context: Context,
-    private val vacancyApi: VacancyApi
-) : NetworkClient {
+    //пока что оставил свой токен
+    private val token: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
 
-    private val connectivityManager by lazy {
-        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    }
-
-    private suspend fun <T> safeApiCall(block: suspend () -> T): NetworkResult<T> {
+    override suspend fun requestFilterArea(): Response {
         if (!isConnected()) {
-            return NetworkResult.NoInternet
+            return Response().apply { resultCode = -1 }
         }
-        return try {
-            NetworkResult.Success(block.invoke())
-        } catch (e: IOException) {
-            NetworkResult.Error(ERROR_CODE_INTERNAL, ERROR_MESSAGE_NETWORK + e.message)
-        } catch (e: HttpException) {
-            NetworkResult.Error(e.code(), e.message() ?: ERROR_MESSAGE_HTTP)
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val areas = vacancyApi.getArea(token)
+
+                // Можно поменять параметры вывода в Log
+                Log.i("areas", areas[0].areas[0].name)
+
+                if (areas.isEmpty()) {
+                    Response().apply { resultCode = 400 }
+                } else {
+                    Response().apply { resultCode = 200 }
+                }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = 500 }
+            }
         }
     }
 
-    override suspend fun searchVacancies(request: VacancyRequest): NetworkResult<VacancyDto> =
-        safeApiCall {
-            vacancyApi.getVacancies(
-                text = request.text,
-                area = request.area,
-                industry = request.industry,
-                salary = request.salary,
-                page = request.page,
-                onlyWithSalary = request.onlyWithSalary
-            )
+    override suspend fun requestFilterIndustry(): Response {
+        if (!isConnected()) {
+            return Response().apply { resultCode = -1 }
         }
 
-    override suspend fun getVacancyDetail(vacancyId: String): NetworkResult<VacancyDetailDto> =
-        safeApiCall { vacancyApi.getVacancyDetail(vacancyId) }
+        return withContext(Dispatchers.IO) {
+            try {
+                val industries = vacancyApi.getIndustry(token)
 
-    override suspend fun getAreas(): NetworkResult<List<FilterAreaDto>> =
-        safeApiCall { vacancyApi.getAreas() }
+                // Можно поменять параметры вывода в Log
+                Log.i("industries", industries[0].name)
 
-    override suspend fun getIndustries(): NetworkResult<List<FilterIndustryDto>> =
-        safeApiCall { vacancyApi.getIndustries() }
+                if (industries.isEmpty()) {
+                    Response().apply { resultCode = 400 }
+                } else {
+                    Response().apply { resultCode = 200 }
+                }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = 500 }
+            }
+        }
+    }
+
+    override suspend fun requestVacancyResponse(dto: VacancyRequest): Response {
+        if (!isConnected()) {
+            return Response().apply { resultCode = -1 }
+        }
+
+        return  withContext(Dispatchers.IO) {
+            try {
+                val vacancies = vacancyApi.searchVacancy(token, dto.options)
+                vacancies.items.forEach {
+
+                    // Можно поменять параметры вывода в Log
+                    Log.i("vacancies", it.id)
+                }
+
+                if (vacancies.items.isEmpty()) {
+                    Response().apply { resultCode = 400 }
+                } else {
+                    vacancies.apply { resultCode = 200 }
+                }
+
+            } catch (e: Throwable) {
+                Log.i("Throwable", e.message.toString())
+                Response().apply { resultCode = 500 }
+
+            }
+        }
+    }
+
+    override suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response {
+        return  withContext(Dispatchers.IO) {
+            try {
+                val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
+
+                // Можно поменять параметры вывода в Log
+                Log.i("vacancyDetail", vacancyDetail.description)
+                Response().apply { resultCode = 200 }
+
+            } catch (e: Throwable) {
+                if (e.message.toString() == "HTTP 404 Not Found") {
+                    Log.i("Throwable", e.message.toString())
+                    Response().apply { resultCode = 404 }
+                }
+                else {
+                    Response().apply { resultCode = 500 }
+                }
+
+            }
+        }
+    }
 
     private fun isConnected(): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        return capabilities?.let {
-            it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
-                it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                it.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
-        } ?: false
+        if (capabilities != null) {
+            when {
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> return true
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> return true
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> return true
+            }
+        }
+        return false
     }
+
 }

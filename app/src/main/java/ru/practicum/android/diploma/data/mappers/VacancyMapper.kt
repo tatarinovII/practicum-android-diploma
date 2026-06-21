@@ -1,7 +1,7 @@
 package ru.practicum.android.diploma.data.mappers
 
-import ru.practicum.android.diploma.data.dto.vacancyresponse.VacancyCardDto
-import ru.practicum.android.diploma.data.dto.vacancyresponse.VacancyCardSalaryDto
+import ru.practicum.android.diploma.data.dto.vacancy.VacancyCardDto
+import ru.practicum.android.diploma.data.dto.vacancy.VacancyCardSalaryDto
 import ru.practicum.android.diploma.domain.models.Salary
 import ru.practicum.android.diploma.domain.models.Vacancy
 

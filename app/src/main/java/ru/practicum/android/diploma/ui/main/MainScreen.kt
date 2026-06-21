@@ -201,12 +201,13 @@ private fun SearchInput(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
-                errorIndicatorColor = Color.Transparent
+                errorIndicatorColor = Color.Transparent,
+                cursorColor = Blue
             ),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             textStyle = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.colorScheme.primary
+                color = Black
             )
         )
     }

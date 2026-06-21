@@ -22,7 +22,6 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
-import ru.practicum.android.diploma.ui.theme.Grey
 import ru.practicum.android.diploma.util.formatSalary
 
 @Composable
@@ -75,7 +74,7 @@ fun VacancyCard(
                     Text(
                         text = vacancy.company,
                         style = MaterialTheme.typography.titleSmall,
-                        color = Grey,
+                        color = colorScheme.primary,
                         maxLines = 1
                     )
                 }

@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
 import ru.practicum.android.diploma.domain.models.SearchResult
-import ru.practicum.android.diploma.domain.models.SearchVacanciesParams
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.util.debounce
 
@@ -67,8 +66,7 @@ class SearchViewModel(
         viewModelScope.launch {
             val page = if (resetPaging) 0 else _uiState.value.currentPage + 1
             setLoadingState(resetPaging)
-
-            val result = searchInteractor(SearchVacanciesParams(text = query, page = page))
+            val result = searchInteractor.searchVacancies(query, page)
             handleSearchResult(result, resetPaging)
         }
     }

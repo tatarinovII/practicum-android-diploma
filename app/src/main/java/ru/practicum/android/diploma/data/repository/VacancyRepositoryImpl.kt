@@ -1,45 +1,51 @@
 package ru.practicum.android.diploma.data.repository
 
 import ru.practicum.android.diploma.data.NetworkClient
-import ru.practicum.android.diploma.data.NetworkResult
-import ru.practicum.android.diploma.data.dto.VacancyRequest
+import ru.practicum.android.diploma.data.dto.vacancy.VacancyDto
 import ru.practicum.android.diploma.data.mappers.toDomain
+import ru.practicum.android.diploma.data.network.VacancyRequest
 import ru.practicum.android.diploma.domain.models.SearchResult
-import ru.practicum.android.diploma.domain.models.SearchVacanciesParams
 import ru.practicum.android.diploma.domain.repository.VacancyRepository
+import java.io.IOException
 
 class VacancyRepositoryImpl(
     private val networkClient: NetworkClient
 ) : VacancyRepository {
 
-    override suspend fun searchVacancies(params: SearchVacanciesParams): Result<SearchResult> {
-        val request = VacancyRequest(
-            text = params.text,
-            area = params.area,
-            industry = params.industry,
-            salary = params.salary,
-            page = params.page,
-            onlyWithSalary = params.onlyWithSalary
+    override suspend fun searchVacancies(
+        query: String,
+        page: Int,
+        perPage: Int
+    ): Result<SearchResult> {
+        val options = hashMapOf(
+            "text" to query,
+            "page" to page.toString(),
+            "per_page" to perPage.toString()
         )
-        return when (val result = networkClient.searchVacancies(request)) {
-            is NetworkResult.Success -> {
-                val vacancyDto = result.data
-                val vacancies = vacancyDto.items.map { it.toDomain() }
-                Result.success(
-                    SearchResult(
-                        vacancies = vacancies,
-                        currentPage = vacancyDto.page,
-                        totalPages = vacancyDto.pages,
-                        totalFound = vacancyDto.found
+        val request = VacancyRequest(options)
+        val response = networkClient.requestVacancyResponse(request)
+
+        return when (response.resultCode) {
+            200 -> {
+                val vacancyDto = response as? VacancyDto
+                if (vacancyDto == null) {
+                    Result.failure(Exception("Некорректный тип ответа"))
+                } else {
+                    val vacancies = vacancyDto.items.map { it.toDomain() }
+                    Result.success(
+                        SearchResult(
+                            vacancies = vacancies,
+                            currentPage = vacancyDto.page,
+                            totalPages = vacancyDto.pages,
+                            totalFound = vacancyDto.found
+                        )
                     )
-                )
+                }
             }
-            is NetworkResult.Error -> {
-                Result.failure(Exception("Ошибка загрузки: ${result.message} (код ${result.code})"))
-            }
-            NetworkResult.NoInternet -> {
-                Result.failure(Exception("Нет подключения к интернету"))
-            }
+            -1 -> Result.failure(IOException("Отсутствует подключение к интернету"))
+            400 -> Result.failure(Exception("Ничего не найдено"))
+            500 -> Result.failure(Exception("Ошибка сервера"))
+            else -> Result.failure(Exception("Неизвестная ошибка ${response.resultCode}"))
         }
     }
 }
