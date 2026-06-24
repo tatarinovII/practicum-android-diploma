@@ -64,11 +64,7 @@ class RetrofitNetworkClient(
         return withContext(Dispatchers.IO) {
             try {
                 val vacancies = vacancyApi.searchVacancy(token, dto.options)
-                if (vacancies.items.isEmpty()) {
-                    Response().apply { resultCode = BAD_REQUEST }
-                } else {
-                    vacancies.apply { resultCode = SUCCESS }
-                }
+                vacancies.apply { resultCode = SUCCESS }
             } catch (e: Throwable) {
                 Response().apply { resultCode = SERVER_ERROR }
             }
@@ -102,5 +98,4 @@ class RetrofitNetworkClient(
         }
         return false
     }
-
 }

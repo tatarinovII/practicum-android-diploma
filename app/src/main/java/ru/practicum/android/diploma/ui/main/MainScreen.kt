@@ -1,8 +1,10 @@
 package ru.practicum.android.diploma.ui.main
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,13 +39,14 @@ import coil.decode.SvgDecoder
 import okhttp3.OkHttpClient
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.presentation.main.SearchScreenState
 import ru.practicum.android.diploma.presentation.main.SearchViewModel
+import ru.practicum.android.diploma.ui.components.ErrorPlaceholder
 import ru.practicum.android.diploma.ui.components.LoadingIndicator
 import ru.practicum.android.diploma.ui.components.VacancyList
 import ru.practicum.android.diploma.ui.navigation.Route
 import ru.practicum.android.diploma.ui.theme.Black
 import ru.practicum.android.diploma.ui.theme.Blue
-import ru.practicum.android.diploma.ui.theme.Grey
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,22 +109,19 @@ fun MainScreen(
             )
 
             Box(modifier = Modifier.fillMaxSize()) {
-                when {
-                    uiState.searchQuery.isEmpty() -> {
-                        EmptyPlaceholder(text = stringResource(R.string.search_placeholder_hint))
+                when (val screenState = uiState.screenState) {
+                    is SearchScreenState.Initial -> {
+                        InitialPlaceholder()
                     }
-                    uiState.isLoading && uiState.vacancies.isEmpty() -> {
+                    is SearchScreenState.Loading -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             LoadingIndicator()
                         }
                     }
-                    uiState.vacancies.isEmpty() -> {
-                        EmptyPlaceholder(text = stringResource(R.string.search_empty_result))
-                    }
-                    else -> {
+                    is SearchScreenState.Content -> {
                         val counterHeight = 38.dp
                         VacancyList(
-                            vacancies = uiState.vacancies,
+                            vacancies = screenState.vacancies,
                             onVacancyClick = { vacancyId ->
                                 navController.navigate("${Route.VACANCY.name}/$vacancyId")
                             },
@@ -129,16 +130,41 @@ fun MainScreen(
                             imageLoader = imageLoader,
                             topPadding = counterHeight
                         )
+                        VacancyCounter(
+                            count = screenState.totalFound,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .zIndex(1f)
+                        )
                     }
-                }
-
-                if (uiState.vacancies.isNotEmpty()) {
-                    VacancyCounter(
-                        count = uiState.totalFound,
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .zIndex(1f)
-                    )
+                    is SearchScreenState.EmptyResult -> {
+                        ErrorPlaceholder(
+                            iconRes = R.drawable.placeholder_not_found,
+                            message = stringResource(R.string.server_error)
+                        )
+                        VacancyCounter(
+                            count = 0,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .zIndex(1f)
+                        )
+                    }
+                    is SearchScreenState.Error -> {
+                        when (screenState) {
+                            SearchScreenState.Error.NoInternet -> {
+                                ErrorPlaceholder(
+                                    iconRes = R.drawable.placeholder_no_connection,
+                                    message = stringResource(R.string.no_internet)
+                                )
+                            }
+                            SearchScreenState.Error.ServerError -> {
+                                ErrorPlaceholder(
+                                    iconRes = R.drawable.placeholder_not_found,
+                                    message = stringResource(R.string.server_error)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -214,16 +240,22 @@ private fun SearchInput(
 }
 
 @Composable
-private fun EmptyPlaceholder(text: String) {
+private fun InitialPlaceholder() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Grey
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(R.drawable.placeholder_main),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .aspectRatio(3f / 2f),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 }
 
@@ -244,7 +276,7 @@ private fun VacancyCounter(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Найдено $count вакансий",
+            text = if (count > 0) "Найдено $count вакансий" else "Таких вакансий нет",
             color = Color.White,
             style = MaterialTheme.typography.bodySmall
         )
