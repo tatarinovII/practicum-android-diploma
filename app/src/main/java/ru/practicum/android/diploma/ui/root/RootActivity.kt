@@ -39,8 +39,6 @@ class RootActivity : ComponentActivity() {
         testVacancy(retrofitNetworkClient, vacancyApi)
         testVacancyDetail(retrofitNetworkClient, vacancyApi)
         //endregion
-        //информация о результате из RetrofitNetworkClient в LogCat
-
     }
 
     //region testArea
