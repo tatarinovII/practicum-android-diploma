@@ -10,8 +10,6 @@ import ru.practicum.android.diploma.data.network.api.VacancyApi
 import android.util.Log
 
 class RetrofitNetworkClient(private val context: Context, private val vacancyApi: VacancyApi) : NetworkClient {
-
-    //пока что оставил свой токен
     private val token: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
 
     override suspend fun requestFilterArea(): Response {
@@ -21,10 +19,6 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         return withContext(Dispatchers.IO) {
             try {
                 val areas = vacancyApi.getArea(token)
-
-                // Можно поменять параметры вывода в Log
-                Log.i("areas", areas[0].areas[0].name)
-
                 if (areas.isEmpty()) {
                     Response().apply { resultCode = 400 }
                 } else {
@@ -44,10 +38,6 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         return withContext(Dispatchers.IO) {
             try {
                 val industries = vacancyApi.getIndustry(token)
-
-                // Можно поменять параметры вывода в Log
-                Log.i("industries", industries[0].name)
-
                 if (industries.isEmpty()) {
                     Response().apply { resultCode = 400 }
                 } else {
@@ -66,22 +56,14 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         return  withContext(Dispatchers.IO) {
             try {
                 val vacancies = vacancyApi.searchVacancy(token, dto.options)
-                vacancies.items.forEach {
-
-                    // Можно поменять параметры вывода в Log
-                    Log.i("vacancies", it.id)
-                }
-
                 if (vacancies.items.isEmpty()) {
                     Response().apply { resultCode = 400 }
                 } else {
                     Response().apply { resultCode = 200 }
                 }
-
             } catch (e: Throwable) {
                 Log.i("Throwable", e.message.toString())
                 Response().apply { resultCode = 500 }
-
             }
         }
     }
@@ -90,11 +72,7 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         return  withContext(Dispatchers.IO) {
             try {
                 val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
-
-                // Можно поменять параметры вывода в Log
-                Log.i("vacancyDetail", vacancyDetail.description)
                 Response().apply { resultCode = 200 }
-
             } catch (e: Throwable) {
                 if (e.message.toString() == "HTTP 404 Not Found") {
                     Log.i("Throwable", e.message.toString())
@@ -103,7 +81,6 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
                 else {
                     Response().apply { resultCode = 500 }
                 }
-
             }
         }
     }
