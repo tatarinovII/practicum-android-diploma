@@ -2,8 +2,28 @@ package ru.practicum.android.diploma.data.mappers
 
 import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
 import ru.practicum.android.diploma.data.dto.filterindustry.FilterIndustryDto
-import ru.practicum.android.diploma.data.dto.vacancydetail.*
-import ru.practicum.android.diploma.domain.models.*
+import ru.practicum.android.diploma.data.dto.vacancydetail.AddressDto
+import ru.practicum.android.diploma.data.dto.vacancydetail.ContactsDto
+import ru.practicum.android.diploma.data.dto.vacancydetail.EmployerDto
+import ru.practicum.android.diploma.data.dto.vacancydetail.EmploymentDto
+import ru.practicum.android.diploma.data.dto.vacancydetail.ExperienceDto
+import ru.practicum.android.diploma.data.dto.vacancydetail.PhoneDto
+import ru.practicum.android.diploma.data.dto.vacancydetail.SalaryDto
+import ru.practicum.android.diploma.data.dto.vacancydetail.ScheduleDto
+import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
+import ru.practicum.android.diploma.domain.models.Address
+import ru.practicum.android.diploma.domain.models.Area
+import ru.practicum.android.diploma.domain.models.Contacts
+import ru.practicum.android.diploma.domain.models.Currency
+import ru.practicum.android.diploma.domain.models.Employer
+import ru.practicum.android.diploma.domain.models.Employment
+import ru.practicum.android.diploma.domain.models.Experience
+import ru.practicum.android.diploma.domain.models.Industry
+import ru.practicum.android.diploma.domain.models.Phone
+import ru.practicum.android.diploma.domain.models.Salary
+import ru.practicum.android.diploma.domain.models.Schedule
+import ru.practicum.android.diploma.domain.models.VacancyDetail
+
 
 fun VacancyDetailDto.toDomain(): VacancyDetail {
     return VacancyDetail(
