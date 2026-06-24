@@ -7,10 +7,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.data.NetworkClient
 import ru.practicum.android.diploma.data.network.api.VacancyApi
-import android.util.Log
 
-class RetrofitNetworkClient(private val context: Context, private val vacancyApi: VacancyApi) : NetworkClient {
-    private val token: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
+class RetrofitNetworkClient(
+    private val context: Context,
+    private val vacancyApi: VacancyApi
+) : NetworkClient {
+    private val token: String =
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
 
     companion object {
         const val ERROR_NO_CONNECTION = -1
@@ -61,7 +64,7 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         if (!isConnected()) {
             return Response().apply { resultCode = ERROR_NO_CONNECTION }
         }
-        return  withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             try {
                 val vacancies = vacancyApi.searchVacancy(token, dto.options)
                 if (vacancies.items.isEmpty()) {
@@ -70,23 +73,20 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
                     Response().apply { resultCode = SUCCESS }
                 }
             } catch (e: Throwable) {
-                Log.i("Throwable", e.message.toString())
                 Response().apply { resultCode = INTERNAL_ERROR_SERVER }
             }
         }
     }
 
     override suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response {
-        return  withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             try {
                 val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
                 Response().apply { resultCode = SUCCESS }
             } catch (e: Throwable) {
                 if (e.message.toString() == "HTTP 404 Not Found") {
-                    Log.i("Throwable", e.message.toString())
                     Response().apply { resultCode = NOT_FOUND }
-                }
-                else {
+                } else {
                     Response().apply { resultCode = INTERNAL_ERROR_SERVER }
                 }
             }
