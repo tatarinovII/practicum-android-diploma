@@ -24,7 +24,7 @@ class RootActivity : ComponentActivity() {
                 AppNavHost()
             }
         }
-        //region settings
+        // region settings
         val vacancyApi = Retrofit.Builder()
             .baseUrl("https://android-diploma.education-services.ru")
             .addConverterFactory(GsonConverterFactory.create())
@@ -39,7 +39,7 @@ class RootActivity : ComponentActivity() {
         testVacancyDetail(retrofitNetworkClient, vacancyApi)
         //endregion
     }
-    //region testArea
+    // region testArea
     private fun testArea(retrofitNetworkClient: RetrofitNetworkClient, vacancyApi: VacancyApi) {
         lifecycleScope.launch {
             try {
@@ -50,8 +50,8 @@ class RootActivity : ComponentActivity() {
             }
         }
     }
-    //endregion
-    //region testIndustry
+    // endregion
+    // region testIndustry
     private fun testIndustry(retrofitNetworkClient: RetrofitNetworkClient, vacancyApi: VacancyApi) {
         lifecycleScope.launch {
             try {
@@ -62,8 +62,8 @@ class RootActivity : ComponentActivity() {
             }
         }
     }
-    //endregion
-    //region testVacancy
+    // endregion
+    // region testVacancy
     private fun testVacancy(retrofitNetworkClient: RetrofitNetworkClient, vacancyApi: VacancyApi) {
         val options: HashMap<String, String> = HashMap()
         val area = "1"
@@ -79,8 +79,8 @@ class RootActivity : ComponentActivity() {
             }
         }
     }
-    //endregion
-    //region testVacancyDetail
+    // endregion
+    // region testVacancyDetail
     private fun testVacancyDetail(retrofitNetworkClient: RetrofitNetworkClient, vacancyApi: VacancyApi) {
         val id = "001cef68-027f-36b2-b7e0-b4e10a2d831f"
         lifecycleScope.launch {
@@ -92,5 +92,5 @@ class RootActivity : ComponentActivity() {
             }
         }
     }
-    //endregion
+    // endregion
 }
