@@ -32,6 +32,9 @@ uiText = "1.11.2"
 #Coroutines
 kotlinCoroutines = "1.8.0"
 
+#Room
+room = "2.8.4"
+
 [libraries]
 # Koin
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
@@ -77,4 +80,9 @@ androidx-compose-foundation = { group = "androidx.compose.foundation", name = "f
 
 #Coroutines
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
+
+#Room
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 [bundles]
