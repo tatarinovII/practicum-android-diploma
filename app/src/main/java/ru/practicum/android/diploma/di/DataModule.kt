@@ -10,7 +10,6 @@ import ru.practicum.android.diploma.data.network.api.VacancyApi
 import ru.practicum.android.diploma.data.db.AppDatabase
 import ru.practicum.android.diploma.data.db.converter.Converters
 import ru.practicum.android.diploma.data.db.dao.VacancyDao
-import ru.practicum.android.diploma.data.network.VacancyApi
 
 val dataModule = module {
     single<VacancyApi> {

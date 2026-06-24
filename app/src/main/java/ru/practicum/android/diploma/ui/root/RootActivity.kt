@@ -2,25 +2,28 @@ package ru.practicum.android.diploma.ui.root
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.data.network.RetrofitNetworkClient
 import ru.practicum.android.diploma.data.network.api.VacancyApi
 import ru.practicum.android.diploma.data.network.VacancyDetailRequest
 import ru.practicum.android.diploma.data.network.VacancyRequest
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import ru.practicum.android.diploma.BuildConfig
 import ru.practicum.android.diploma.ui.navigation.AppNavHost
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
 
 class RootActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setContent {
+            MyAppTheme {
+                AppNavHost()
+            }
+        }
 
         //region settings
         val vacancyApi = Retrofit.Builder()
@@ -48,12 +51,6 @@ class RootActivity : ComponentActivity() {
                 Log.d("NetworkRequest", "Response: $response")
             } catch (e: Exception) {
                 e.printStackTrace()
-        // Пример использования access token для HeadHunter API
-        networkRequestExample(accessToken = BuildConfig.API_ACCESS_TOKEN)
-
-        setContent {
-            MyAppTheme {
-                AppNavHost()
             }
         }
     }
