@@ -3,7 +3,6 @@ package ru.practicum.android.diploma.data.repository
 import ru.practicum.android.diploma.data.NetworkClient
 import ru.practicum.android.diploma.data.dto.vacancy.VacancyDto
 import ru.practicum.android.diploma.data.mappers.toDomain
-import ru.practicum.android.diploma.data.network.ResponseCode.BAD_REQUEST
 import ru.practicum.android.diploma.data.network.ResponseCode.NO_CONNECTION
 import ru.practicum.android.diploma.data.network.ResponseCode.SERVER_ERROR
 import ru.practicum.android.diploma.data.network.ResponseCode.SUCCESS
@@ -47,7 +46,6 @@ class VacancyRepositoryImpl(
                 }
             }
             NO_CONNECTION -> Result.failure(IOException("Отсутствует подключение к интернету"))
-            BAD_REQUEST -> Result.failure(Exception("Ничего не найдено"))
             SERVER_ERROR -> Result.failure(Exception("Ошибка сервера"))
             else -> Result.failure(Exception("Неизвестная ошибка ${response.resultCode}"))
         }

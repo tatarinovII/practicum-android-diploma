@@ -11,16 +11,26 @@ import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.util.debounce
+import java.io.IOException
+
+sealed class SearchScreenState {
+    object Initial : SearchScreenState()
+    object Loading : SearchScreenState()
+    data class Content(val vacancies: List<Vacancy>, val totalFound: Int) : SearchScreenState()
+    object EmptyResult : SearchScreenState()
+    sealed class Error : SearchScreenState() {
+        object NoInternet : Error()
+        object ServerError : Error()
+    }
+}
 
 data class SearchUiState(
     val searchQuery: String = "",
-    val vacancies: List<Vacancy> = emptyList(),
-    val isLoading: Boolean = false,
+    val screenState: SearchScreenState = SearchScreenState.Initial,
     val isLoadingMore: Boolean = false,
     val currentPage: Int = 0,
     val totalPages: Int = 0,
-    val totalFound: Int = 0,
-    val error: String? = null
+    val totalFound: Int = 0
 )
 
 class SearchViewModel(
@@ -43,7 +53,7 @@ class SearchViewModel(
         if (query.isNotEmpty()) {
             searchDebounce(query)
         } else {
-            clearQuery()
+            _uiState.update { it.copy(screenState = SearchScreenState.Initial, totalFound = 0) }
         }
     }
 
@@ -65,25 +75,25 @@ class SearchViewModel(
     private fun performSearch(query: String, resetPaging: Boolean) {
         viewModelScope.launch {
             val page = if (resetPaging) 0 else _uiState.value.currentPage + 1
-            setLoadingState(resetPaging)
+            if (resetPaging) {
+                _uiState.update {
+                    it.copy(
+                        screenState = SearchScreenState.Loading,
+                        isLoadingMore = false,
+                        currentPage = 0
+                    )
+                }
+            } else {
+                _uiState.update { it.copy(isLoadingMore = true) }
+            }
             val result = searchInteractor.searchVacancies(query, page)
             handleSearchResult(result, resetPaging)
         }
     }
 
-    private fun setLoadingState(resetPaging: Boolean) {
-        _uiState.update {
-            it.copy(
-                isLoading = resetPaging,
-                isLoadingMore = !resetPaging,
-                error = null
-            )
-        }
-    }
-
     private fun handleSearchResult(result: Result<SearchResult>, resetPaging: Boolean) {
         _uiState.update { state ->
-            val newState = state.copy(isLoading = false, isLoadingMore = false)
+            val newState = state.copy(isLoadingMore = false)
             result.fold(
                 onSuccess = { searchResult -> handleSuccess(searchResult, state, resetPaging, newState) },
                 onFailure = { exception -> handleFailure(exception, newState) }
@@ -100,20 +110,44 @@ class SearchViewModel(
         val newVacancies = if (resetPaging) {
             searchResult.vacancies
         } else {
-            state.vacancies + searchResult.vacancies
+            state.screenState.let {
+                if (it is SearchScreenState.Content) it.vacancies + searchResult.vacancies
+                else searchResult.vacancies
+            }
         }
         return newState.copy(
-            vacancies = newVacancies,
+            screenState = if (searchResult.vacancies.isEmpty() && resetPaging) {
+                SearchScreenState.EmptyResult
+            } else if (searchResult.vacancies.isEmpty()) {
+                if (state.screenState is SearchScreenState.Content) {
+                    SearchScreenState.Content(
+                        vacancies = state.screenState.vacancies,
+                        totalFound = state.screenState.totalFound
+                    )
+                } else {
+                    SearchScreenState.EmptyResult
+                }
+            } else {
+                SearchScreenState.Content(
+                    vacancies = newVacancies,
+                    totalFound = searchResult.totalFound
+                )
+            },
             currentPage = searchResult.currentPage,
             totalPages = searchResult.totalPages,
             totalFound = searchResult.totalFound,
-            error = null
+            isLoadingMore = false
         )
     }
 
     private fun handleFailure(exception: Throwable, newState: SearchUiState): SearchUiState {
+        val errorState = when (exception) {
+            is IOException -> SearchScreenState.Error.NoInternet
+            else -> SearchScreenState.Error.ServerError
+        }
         return newState.copy(
-            error = exception.message ?: "Произошла ошибка"
+            screenState = errorState,
+            totalFound = 0
         )
     }
 }
