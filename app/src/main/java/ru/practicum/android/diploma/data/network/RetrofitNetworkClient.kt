@@ -72,10 +72,13 @@ class RetrofitNetworkClient(
     }
 
     override suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response {
+        if (!isConnected()) {
+            return Response().apply { resultCode = NO_CONNECTION }
+        }
         return withContext(Dispatchers.IO) {
             try {
                 val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
-                Response().apply { resultCode = SUCCESS }
+                vacancyDetail.apply { resultCode = SUCCESS }
             } catch (e: Throwable) {
                 if (e.message.toString() == "HTTP 404 Not Found") {
                     Response().apply { resultCode = NOT_FOUND }
