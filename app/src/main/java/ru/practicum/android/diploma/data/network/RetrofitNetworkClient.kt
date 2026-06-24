@@ -7,87 +7,73 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.data.NetworkClient
 import ru.practicum.android.diploma.data.network.api.VacancyApi
-import android.util.Log
-import ru.practicum.android.diploma.data.network.ResponseCode.BAD_REQUEST
-import ru.practicum.android.diploma.data.network.ResponseCode.NOT_FOUND
-import ru.practicum.android.diploma.data.network.ResponseCode.NO_INTERNET
-import ru.practicum.android.diploma.data.network.ResponseCode.SERVER_ERROR
-import ru.practicum.android.diploma.data.network.ResponseCode.SUCCESS
 
-class RetrofitNetworkClient(private val context: Context, private val vacancyApi: VacancyApi) : NetworkClient {
+class RetrofitNetworkClient(
+    private val context: Context,
+    private val vacancyApi: VacancyApi
+) : NetworkClient {
+    private val token: String =
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
 
-    // пока что оставил свой токен
-    private val token: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
+    companion object {
+        const val ERROR_NO_CONNECTION = -1
+        const val NOT_FOUND = 404
+        const val EMPTY = 400
+        const val SUCCESS = 200
+        const val INTERNAL_ERROR_SERVER = 500
+    }
 
     override suspend fun requestFilterArea(): Response {
         if (!isConnected()) {
-            return Response().apply { resultCode = NO_INTERNET }
+            return Response().apply { resultCode = ERROR_NO_CONNECTION }
         }
-
         return withContext(Dispatchers.IO) {
             try {
                 val areas = vacancyApi.getArea(token)
-
-                // Можно поменять параметры вывода в Log
-                Log.i("areas", areas[0].areas[0].name)
-
                 if (areas.isEmpty()) {
-                    Response().apply { resultCode = BAD_REQUEST }
+                    Response().apply { resultCode = EMPTY }
                 } else {
                     Response().apply { resultCode = SUCCESS }
                 }
             } catch (e: Throwable) {
-                Response().apply { resultCode = SERVER_ERROR }
+                Response().apply { resultCode = INTERNAL_ERROR_SERVER }
             }
         }
     }
 
     override suspend fun requestFilterIndustry(): Response {
         if (!isConnected()) {
-            return Response().apply { resultCode = NO_INTERNET }
+            return Response().apply { resultCode = ERROR_NO_CONNECTION }
         }
 
         return withContext(Dispatchers.IO) {
             try {
                 val industries = vacancyApi.getIndustry(token)
-
-                // Можно поменять параметры вывода в Log
-                Log.i("industries", industries[0].name)
-
                 if (industries.isEmpty()) {
-                    Response().apply { resultCode = BAD_REQUEST }
+                    Response().apply { resultCode = EMPTY }
                 } else {
                     Response().apply { resultCode = SUCCESS }
                 }
             } catch (e: Throwable) {
-                Response().apply { resultCode = SERVER_ERROR }
+                Response().apply { resultCode = INTERNAL_ERROR_SERVER }
             }
         }
     }
 
     override suspend fun requestVacancyResponse(dto: VacancyRequest): Response {
         if (!isConnected()) {
-            return Response().apply { resultCode = NO_INTERNET }
+            return Response().apply { resultCode = ERROR_NO_CONNECTION }
         }
-
         return withContext(Dispatchers.IO) {
             try {
                 val vacancies = vacancyApi.searchVacancy(token, dto.options)
-                vacancies.items.forEach {
-                    // Можно поменять параметры вывода в Log
-                    Log.i("vacancies", it.id)
-                }
-
                 if (vacancies.items.isEmpty()) {
-                    Response().apply { resultCode = BAD_REQUEST }
+                    Response().apply { resultCode = EMPTY }
                 } else {
                     vacancies.apply { resultCode = SUCCESS }
                 }
-
             } catch (e: Throwable) {
-                Log.i("Throwable", e.message.toString())
-                Response().apply { resultCode = SERVER_ERROR }
-
+                Response().apply { resultCode = INTERNAL_ERROR_SERVER }
             }
         }
     }
@@ -96,19 +82,13 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         return withContext(Dispatchers.IO) {
             try {
                 val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
-
-                // Можно поменять параметры вывода в Log
-                Log.i("vacancyDetail", vacancyDetail.description)
                 Response().apply { resultCode = SUCCESS }
-
             } catch (e: Throwable) {
                 if (e.message.toString() == "HTTP 404 Not Found") {
-                    Log.i("Throwable", e.message.toString())
                     Response().apply { resultCode = NOT_FOUND }
                 } else {
-                    Response().apply { resultCode = SERVER_ERROR }
+                    Response().apply { resultCode = INTERNAL_ERROR_SERVER }
                 }
-
             }
         }
     }
@@ -125,4 +105,5 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         }
         return false
     }
+
 }
