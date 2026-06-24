@@ -1,14 +1,12 @@
 package ru.practicum.android.diploma.data
 
-import ru.practicum.android.diploma.data.dto.Response
-import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
-import ru.practicum.android.diploma.data.dto.filterindustry.FilterIndustryDto
-import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
-import ru.practicum.android.diploma.data.dto.vacancyresponse.VacancyDto
+import ru.practicum.android.diploma.data.network.Response
+import ru.practicum.android.diploma.data.network.VacancyDetailRequest
+import ru.practicum.android.diploma.data.network.VacancyRequest
 
 interface NetworkClient {
-    suspend fun requestFilterArea(dto: FilterAreaDto): Response
-    suspend fun requestFilterIndustry(dto: FilterIndustryDto): Response
-    suspend fun requestVacancyResponse(dto: VacancyDto): Response
-    suspend fun requestVacancyDetail(dto: VacancyDetailDto): Response
+    suspend fun requestFilterArea(): Response
+    suspend fun requestFilterIndustry(): Response
+    suspend fun requestVacancyResponse(dto: VacancyRequest): Response
+    suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response
 }
