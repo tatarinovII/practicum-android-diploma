@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.ui.components
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

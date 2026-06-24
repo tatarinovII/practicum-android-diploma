@@ -111,8 +111,11 @@ class SearchViewModel(
             searchResult.vacancies
         } else {
             state.screenState.let {
-                if (it is SearchScreenState.Content) it.vacancies + searchResult.vacancies
-                else searchResult.vacancies
+                if (it is SearchScreenState.Content) {
+                    it.vacancies + searchResult.vacancies
+                } else {
+                    searchResult.vacancies
+                }
             }
         }
         return newState.copy(
