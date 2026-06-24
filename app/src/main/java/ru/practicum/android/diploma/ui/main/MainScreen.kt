@@ -140,7 +140,7 @@ fun MainScreen(
                     is SearchScreenState.EmptyResult -> {
                         ErrorPlaceholder(
                             iconRes = R.drawable.placeholder_not_found,
-                            message = stringResource(R.string.server_error)
+                            message = stringResource(R.string.not_found)
                         )
                         VacancyCounter(
                             count = 0,
@@ -159,7 +159,7 @@ fun MainScreen(
                             }
                             SearchScreenState.Error.ServerError -> {
                                 ErrorPlaceholder(
-                                    iconRes = R.drawable.placeholder_not_found,
+                                    iconRes = R.drawable.placeholder_server_error,
                                     message = stringResource(R.string.server_error)
                                 )
                             }
