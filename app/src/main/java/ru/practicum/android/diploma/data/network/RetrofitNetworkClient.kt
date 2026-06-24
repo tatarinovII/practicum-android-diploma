@@ -18,7 +18,6 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
-
         return withContext(Dispatchers.IO) {
             try {
                 val areas = vacancyApi.getArea(token)
@@ -64,7 +63,6 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
-
         return  withContext(Dispatchers.IO) {
             try {
                 val vacancies = vacancyApi.searchVacancy(token, dto.options)
