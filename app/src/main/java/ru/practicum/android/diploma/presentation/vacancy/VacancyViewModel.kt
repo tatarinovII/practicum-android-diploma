@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
+import ru.practicum.android.diploma.domain.models.VacancyDetail
 
 class VacancyViewModel(
     savedStateHandle: SavedStateHandle,
@@ -16,6 +17,8 @@ class VacancyViewModel(
     private val vacancyId: String = checkNotNull(savedStateHandle["vacancyId"])
     private val _state = MutableStateFlow<VacancyState>(VacancyState.Loading)
     val state: StateFlow<VacancyState> = _state
+
+    private lateinit var vacancyDetail: VacancyDetail
 
     init {
         loadData()
@@ -30,7 +33,8 @@ class VacancyViewModel(
             )
            interactor.getVacancyDetail(vacancyId).fold(
                onSuccess = {
-                   _state.value = VacancyState.Content(it, isFavorite)
+                   vacancyDetail = it
+                   _state.value = VacancyState.Content(vacancyDetail, isFavorite)
                },
                onFailure = {
                    _state.value = VacancyState.Error
@@ -40,7 +44,12 @@ class VacancyViewModel(
     }
 
     fun onButtonFavoriteClicked() {
-
+        viewModelScope.launch {
+            val isFavorite = interactor.isFavorite(vacancyId).fold(onSuccess = { it }, onFailure = { false })
+            if (isFavorite) {
+                interactor.deleteFromFavorite(vacancyId)
+            } else interactor.addToFavorite(vacancyDetail)
+        }
     }
 
     fun onButtonShareClicked() {

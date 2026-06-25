@@ -9,4 +9,7 @@ interface VacancyRepository {
     suspend fun isFavorite(vacancyId: String): Result<Boolean>
     suspend fun addToFavorite(vacancy: VacancyDetail)
     suspend fun deleteFromFavorite(vacancyId: String)
+    fun shareVacancy(link: String)
+    fun callNumber(number: String)
+    fun sendEmail(email: String)
 }
