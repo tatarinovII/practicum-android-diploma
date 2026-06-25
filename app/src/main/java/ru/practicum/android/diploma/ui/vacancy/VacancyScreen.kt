@@ -312,6 +312,14 @@ fun VacancyDetail(
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleSmall
                 )
+                if (phone.comment?.isNotEmpty() == true) {
+                    Text(
+                        text = phone.comment,
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                }
+
             }
         }
     }
