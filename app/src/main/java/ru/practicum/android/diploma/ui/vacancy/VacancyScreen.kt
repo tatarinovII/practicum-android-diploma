@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.ui.vacancy
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -247,6 +247,62 @@ fun VacancyDetail(vacancyDetail: VacancyDetail) {
     Spacer(modifier = Modifier.height(32.dp))
 
     DescriptionVacancy(vacancyDetail.description)
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    if (vacancyDetail.skills?.isNotEmpty() == true) {
+        Text(
+            text = stringResource(R.string.skills),
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        vacancyDetail.skills.forEach { skill ->
+            Text(
+                text = "• $skill",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleSmall
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    if (vacancyDetail.contacts?.email?.isNotEmpty() == true || vacancyDetail.contacts?.phones?.isNotEmpty() == true) {
+        Text(
+            text = stringResource(R.string.contacts),
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        if (vacancyDetail.contacts.name?.isNotEmpty() == true) {
+            Text(
+                text = vacancyDetail.contacts.name,
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleSmall
+            )
+        }
+
+        if (vacancyDetail.contacts.email?.isNotEmpty() == true) {
+            Text(
+                modifier = Modifier.clickable {},
+                text = vacancyDetail.contacts.email,
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleSmall
+            )
+        }
+
+        if (vacancyDetail.contacts.phones?.isNotEmpty() == true) {
+            vacancyDetail.contacts.phones.forEach { phone ->
+                Text(
+                    modifier = Modifier.clickable {},
+                    text = phone.formatted.toString(),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+        }
+    }
 }
 
 @Composable
