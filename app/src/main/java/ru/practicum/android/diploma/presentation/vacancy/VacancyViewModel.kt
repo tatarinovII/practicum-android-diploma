@@ -53,14 +53,14 @@ class VacancyViewModel(
     }
 
     fun onButtonShareClicked() {
-
+        interactor.shareVacancy(vacancyDetail.url.toString())
     }
 
     fun onEmailClicked(email: String) {
-
+        interactor.sendEmail(email)
     }
 
     fun onPhoneNumberClicked(phone: String) {
-
+        interactor.callNumber(phone)
     }
 }
