@@ -24,9 +24,13 @@ class VacancyViewModel(
 
     fun loadData() {
         viewModelScope.launch {
+            val isFavorite = interactor.isFavorite(vacancyId).fold(
+                onSuccess = { it },
+                onFailure = { false },
+            )
            interactor.getVacancyDetail(vacancyId).fold(
                onSuccess = {
-                   _state.value = VacancyState.Content(it)
+                   _state.value = VacancyState.Content(it, isFavorite)
                },
                onFailure = {
                    _state.value = VacancyState.Error
