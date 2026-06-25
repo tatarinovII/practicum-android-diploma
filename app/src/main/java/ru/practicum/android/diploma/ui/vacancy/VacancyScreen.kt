@@ -117,7 +117,10 @@ fun VacancyScreen(
                         ShowLoading()
                     }
                     is VacancyState.Content -> {
-                        ShowContent((state as VacancyState.Content).vacancyDetail)
+                        ShowContent((
+                            state as VacancyState.Content).vacancyDetail,
+                            vacancyViewModel = viewModel
+                        )
                     }
                     is VacancyState.NotFound -> {
                         ShowNotFoundPlaceHolder()
@@ -146,7 +149,10 @@ fun ShowLoading() {
 }
 
 @Composable
-fun ShowContent(vacancyDetail: VacancyDetail) {
+fun ShowContent(
+    vacancyDetail: VacancyDetail,
+    vacancyViewModel: VacancyViewModel
+) {
     LazyColumn(modifier = Modifier
         .fillMaxSize()
         .padding(
@@ -155,7 +161,10 @@ fun ShowContent(vacancyDetail: VacancyDetail) {
             end = 16.dp
         )
     ) {
-      item { VacancyDetail(vacancyDetail)}
+      item { VacancyDetail(
+          vacancyDetail,
+          vacancyViewModel
+      )}
     }
 }
 
@@ -201,7 +210,10 @@ fun ShowErrorPlaceHolder() {
 }
 
 @Composable
-fun VacancyDetail(vacancyDetail: VacancyDetail) {
+fun VacancyDetail(
+    vacancyDetail: VacancyDetail,
+    viewModel: VacancyViewModel
+) {
     Text(
         modifier = Modifier.padding(top = 8.dp),
         text = vacancyDetail.name,
@@ -285,7 +297,7 @@ fun VacancyDetail(vacancyDetail: VacancyDetail) {
 
         if (vacancyDetail.contacts.email?.isNotEmpty() == true) {
             Text(
-                modifier = Modifier.clickable {},
+                modifier = Modifier.clickable {viewModel.onEmailClicked(vacancyDetail.contacts.email)},
                 text = vacancyDetail.contacts.email,
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleSmall
@@ -295,7 +307,7 @@ fun VacancyDetail(vacancyDetail: VacancyDetail) {
         if (vacancyDetail.contacts.phones?.isNotEmpty() == true) {
             vacancyDetail.contacts.phones.forEach { phone ->
                 Text(
-                    modifier = Modifier.clickable {},
+                    modifier = Modifier.clickable {viewModel.onPhoneNumberClicked(phone.formatted.toString())},
                     text = phone.formatted.toString(),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleSmall
