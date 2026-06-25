@@ -1,6 +1,8 @@
 package ru.practicum.android.diploma.domain.interactor
 
+import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.models.SearchResult
+import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.VacancyDetail
 
 interface VacanciesInteractor {
@@ -12,4 +14,5 @@ interface VacanciesInteractor {
     fun shareVacancy(link: String)
     fun callNumber(number: String)
     fun sendEmail(email: String)
+    suspend fun uploadFavoritesVacancies(): Result<Flow<List<Vacancy>>>
 }

@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ErrorPlaceholder(
+fun Placeholder(
     iconRes: Int,
     message: String,
     modifier: Modifier = Modifier
