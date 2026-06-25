@@ -49,7 +49,7 @@ fun AppNavHost() {
                 arguments = listOf(navArgument("vacancyId") { type = NavType.StringType })
             ) { backStackEntry ->
                 backStackEntry.arguments?.getString("vacancyId")?.let { vacancyId ->
-                    VacancyScreen(vacancyId)
+                    VacancyScreen(navController)
                 }
             }
         }

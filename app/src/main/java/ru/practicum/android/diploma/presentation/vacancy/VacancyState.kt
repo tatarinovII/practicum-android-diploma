@@ -9,5 +9,7 @@ sealed interface VacancyState {
         val vacancyDetail: VacancyDetail, val isFavorite: Boolean
     ) : VacancyState
 
+    object NotFound : VacancyState
+
     object Error : VacancyState
 }
