@@ -41,7 +41,7 @@ import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.main.SearchScreenState
 import ru.practicum.android.diploma.presentation.main.SearchViewModel
-import ru.practicum.android.diploma.ui.components.ErrorPlaceholder
+import ru.practicum.android.diploma.ui.components.Placeholder
 import ru.practicum.android.diploma.ui.components.LoadingIndicator
 import ru.practicum.android.diploma.ui.components.VacancyList
 import ru.practicum.android.diploma.ui.navigation.Route
@@ -138,7 +138,7 @@ fun MainScreen(
                         )
                     }
                     is SearchScreenState.EmptyResult -> {
-                        ErrorPlaceholder(
+                        Placeholder(
                             iconRes = R.drawable.placeholder_not_found,
                             message = stringResource(R.string.not_found)
                         )
@@ -152,13 +152,13 @@ fun MainScreen(
                     is SearchScreenState.Error -> {
                         when (screenState) {
                             SearchScreenState.Error.NoInternet -> {
-                                ErrorPlaceholder(
+                                Placeholder(
                                     iconRes = R.drawable.placeholder_no_connection,
                                     message = stringResource(R.string.no_internet)
                                 )
                             }
                             SearchScreenState.Error.ServerError -> {
-                                ErrorPlaceholder(
+                                Placeholder(
                                     iconRes = R.drawable.placeholder_server_error,
                                     message = stringResource(R.string.server_error)
                                 )

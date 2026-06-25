@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.api.ResponseException
 import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
@@ -54,6 +55,8 @@ class VacancyViewModel(
             if (isFavorite) {
                 interactor.deleteFromFavorite(vacancyId)
             } else interactor.addToFavorite(vacancyDetail)
+
+            _state.update { if (it is VacancyState.Content) it.copy(isFavorite = !isFavorite) else it }
         }
     }
 

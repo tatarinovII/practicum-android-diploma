@@ -5,5 +5,5 @@ import ru.practicum.android.diploma.data.repository.VacancyRepositoryImpl
 import ru.practicum.android.diploma.domain.repository.VacancyRepository
 
 val repositoryModule = module {
-    single<VacancyRepository> { VacancyRepositoryImpl(get(), get(), get(), get()) }
+    single<VacancyRepository> { VacancyRepositoryImpl(get(), get(), get()) }
 }
