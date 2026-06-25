@@ -64,11 +64,7 @@ class RetrofitNetworkClient(
         return withContext(Dispatchers.IO) {
             try {
                 val vacancies = vacancyApi.searchVacancy(token, dto.options)
-                if (vacancies.items.isEmpty()) {
-                    Response().apply { resultCode = BAD_REQUEST }
-                } else {
-                    vacancies.apply { resultCode = SUCCESS }
-                }
+                vacancies.apply { resultCode = SUCCESS }
             } catch (e: Throwable) {
                 Response().apply { resultCode = SERVER_ERROR }
             }
@@ -76,10 +72,13 @@ class RetrofitNetworkClient(
     }
 
     override suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response {
+        if (!isConnected()) {
+            return Response().apply { resultCode = NO_CONNECTION }
+        }
         return withContext(Dispatchers.IO) {
             try {
                 val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
-                Response().apply { resultCode = SUCCESS }
+                vacancyDetail.apply { resultCode = SUCCESS }
             } catch (e: Throwable) {
                 if (e.message.toString() == "HTTP 404 Not Found") {
                     Response().apply { resultCode = NOT_FOUND }
@@ -102,5 +101,4 @@ class RetrofitNetworkClient(
         }
         return false
     }
-
 }
