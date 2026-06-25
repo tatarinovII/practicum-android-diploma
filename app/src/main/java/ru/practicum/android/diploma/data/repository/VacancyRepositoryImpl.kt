@@ -13,6 +13,7 @@ import ru.practicum.android.diploma.data.network.ResponseCode.NO_CONNECTION
 import ru.practicum.android.diploma.data.network.ResponseCode.SERVER_ERROR
 import ru.practicum.android.diploma.data.network.ResponseCode.SUCCESS
 import ru.practicum.android.diploma.data.network.VacancyDetailRequest
+import ru.practicum.android.diploma.domain.api.ResponseException
 import ru.practicum.android.diploma.data.network.VacancyRequest
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.VacancyDetail
@@ -74,10 +75,10 @@ class VacancyRepositoryImpl(
                     Result.success(detailDto.toDomain())
                 }
             }
-            NO_CONNECTION -> Result.failure(IOException("Нет подключения к интернету"))
-            NOT_FOUND -> Result.failure(Exception("Вакансия не найдена"))
-            SERVER_ERROR -> Result.failure(Exception("Ошибка сервера"))
-            else -> Result.failure(Exception("Ошибка загрузки деталей (код ${response.resultCode})"))
+            NO_CONNECTION -> Result.failure(ResponseException(NO_CONNECTION,IOException("Нет подключения к интернету")))
+            NOT_FOUND -> Result.failure(ResponseException(NOT_FOUND, Exception("Вакансия не найдена")))
+            SERVER_ERROR -> Result.failure(ResponseException(SERVER_ERROR, Exception("Ошибка сервера")))
+            else -> Result.failure(ResponseException(response.resultCode, Exception("Ошибка загрузки деталей (код ${response.resultCode})")))
         }
     }
 

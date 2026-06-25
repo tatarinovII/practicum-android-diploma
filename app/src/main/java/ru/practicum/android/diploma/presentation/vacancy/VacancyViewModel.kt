@@ -6,13 +6,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.api.ResponseException
 import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
 import ru.practicum.android.diploma.domain.models.VacancyDetail
 
 class VacancyViewModel(
     savedStateHandle: SavedStateHandle,
     private val interactor: VacanciesInteractor
-): ViewModel() {
+) : ViewModel() {
 
     private val vacancyId: String = checkNotNull(savedStateHandle["vacancyId"])
     private val _state = MutableStateFlow<VacancyState>(VacancyState.Loading)
@@ -24,22 +25,26 @@ class VacancyViewModel(
         loadData()
     }
 
-
     fun loadData() {
         viewModelScope.launch {
             val isFavorite = interactor.isFavorite(vacancyId).fold(
                 onSuccess = { it },
                 onFailure = { false },
             )
-           interactor.getVacancyDetail(vacancyId).fold(
-               onSuccess = {
-                   vacancyDetail = it
-                   _state.value = VacancyState.Content(vacancyDetail, isFavorite)
-               },
-               onFailure = {
-                   _state.value = VacancyState.Error
-               }
-           )
+            interactor.getVacancyDetail(vacancyId).fold(
+                onSuccess = {
+                    vacancyDetail = it
+                    _state.value = VacancyState.Content(vacancyDetail, isFavorite)
+                },
+                onFailure = {
+                    val code = (it as? ResponseException)?.responseCode
+                    when (code) {
+                        404 -> _state.value = VacancyState.NotFound
+                        else -> _state.value = VacancyState.Error
+                    }
+
+                }
+            )
         }
     }
 
