@@ -23,8 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,96 +38,21 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import org.jsoup.Jsoup
-import ru.practicum.android.diploma.ui.theme.MyAppTheme
+import org.koin.compose.viewmodel.koinViewModel
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.domain.models.Address
-import ru.practicum.android.diploma.domain.models.Area
-import ru.practicum.android.diploma.domain.models.Contacts
-import ru.practicum.android.diploma.domain.models.Currency
-import ru.practicum.android.diploma.domain.models.Employer
-import ru.practicum.android.diploma.domain.models.Employment
-import ru.practicum.android.diploma.domain.models.Experience
-import ru.practicum.android.diploma.domain.models.Industry
-import ru.practicum.android.diploma.domain.models.Phone
-import ru.practicum.android.diploma.domain.models.Salary
-import ru.practicum.android.diploma.domain.models.Schedule
 import ru.practicum.android.diploma.domain.models.VacancyDetail
-import ru.practicum.android.diploma.presentation.vacancy.VacancyUiState
+import ru.practicum.android.diploma.presentation.vacancy.VacancyState
 import ru.practicum.android.diploma.presentation.vacancy.VacancyViewModel
-import ru.practicum.android.diploma.ui.navigation.Route
+import ru.practicum.android.diploma.ui.theme.MyAppTheme
 import ru.practicum.android.diploma.util.formatSalary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VacancyScreen(
     navController: NavController,
-    viewModel: VacancyViewModel,
-    vacancyId: String
+    viewModel: VacancyViewModel = koinViewModel()
 ) {
-
-    val vacancyUiState by viewModel.observeVacancyUiState().observeAsState(initial = VacancyUiState.Loading)
-
-    // Тестовая строка html
-    val html: String? = "<h2>Описание вакансии</h2><p>Ищем DevOps-инженера в инфраструктурную команду, которая отвечает за CI/CD, стабильность сервисов и среду разработки.</p><p>Подойдёт специалисту, который любит автоматизировать рутину и понимает эксплуатацию систем в продакшене.</p><section><h3>Обязанности</h3><ul><li>Развивать пайплайны CI/CD и стандарты поставки приложений.</li><li>Поддерживать Kubernetes-кластеры и инфраструктурные сервисы.</li><li>Настраивать мониторинг, алертинг и логирование.</li></ul></section><section><h3>Требования</h3><ul><li>Опыт работы с Docker и Kubernetes.</li><li>Понимание Linux, сетевого взаимодействия и принципов наблюдаемости.</li><li>Практический опыт с GitLab CI, Ansible или Terraform.</li></ul></section><section><h3>Условия</h3><ul><li>Сильная инженерная культура и техническая автономия.</li><li>Задачи на развитие платформы, а не только на ручную поддержку.</li><li>Гибкий формат работы и компенсация профильного обучения.</li></ul></section>"
-
-    // Тестовая вакансия
-    val vacancyDetail: VacancyDetail = VacancyDetail(
-        id = "001cef68-027f-36b2-b7e0-b4e10a2d831f",
-        name = "DevOps-инженер",
-        description = html,
-        salary = Salary(
-            from = null,
-            to = 70000,
-            currency = Currency.UAH
-        ),
-        address = Address(
-            city = "Екатеринбург",
-            street = "Ленина",
-            building = "4",
-            raw = "Екатеринбург, Ленина, 4"
-        ),
-        experience = Experience(
-            name = "От 1 года до 3 лет"
-        ),
-        schedule = Schedule(
-            name = "Удаленная работа"
-        ),
-        employment = Employment(
-            name = "Полная занятость"
-        ),
-        contacts = Contacts(
-            name = "Петров Петр Петрович",
-            email = "",
-            phones = listOf(
-                Phone(
-                    comment = null,
-                    formatted = "+7 (999) 234-56-78"
-                ),
-                Phone(
-                    comment = null,
-                    formatted = "+7 (999) 876-54-32"
-                )
-            )
-        ),
-        employer = Employer(
-            name = "Adobe",
-            logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Adobe_Corporate_logo.svg/500px-Adobe_Corporate_logo.svg.png"
-        ),
-        area = Area(
-            name = "Екатеринбург"
-        ),
-        skills = listOf(
-            "Docker",
-            "Kubernetes",
-            "Linux",
-            "GitLab CI",
-            "Ansible"
-        ),
-        url = "cek6h0n4ffe7ur.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com/vacancies/001cef68-027f-36b2-b7e0-b4e10a2d831f",
-        industry = Industry(
-            name = "Информационные технологии, системная интеграция, интернет"
-        )
-    )
+    val state by viewModel.state.collectAsState()
 
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -141,7 +66,7 @@ fun VacancyScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.navigate(Route.VACANCY.name) },
+                        onClick = { navController.popBackStack() },
                         modifier = Modifier.padding(
                                 vertical = 8.dp,
                                 horizontal = 4.dp
@@ -156,7 +81,7 @@ fun VacancyScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { viewModel.shareVacancy() },
+                        onClick = { viewModel.onButtonShareClicked() },
                         modifier = Modifier.padding(
                                 vertical = 8.dp,
                                 horizontal = 4.dp
@@ -170,7 +95,7 @@ fun VacancyScreen(
                     }
 
                     IconButton(
-                        onClick = { viewModel.addToFavorites() },
+                        onClick = { viewModel.onButtonFavoriteClicked() },
                         modifier = Modifier.padding(
                                 top = 8.dp,
                                 bottom = 8.dp,
@@ -185,17 +110,16 @@ fun VacancyScreen(
                     }
                 }
             )
-            ShowContent(vacancyDetail)
 
             Box(modifier = Modifier.fillMaxSize()) {
-                when(val state = vacancyUiState) {
-                    is VacancyUiState.Loading -> {
+                when(state) {
+                    is VacancyState.Loading -> {
                         ShowLoading()
                     }
-                    is VacancyUiState.Content -> {
-                        ShowContent(vacancyDetail)
+                    is VacancyState.Content -> {
+                        ShowContent((state as VacancyState.Content).vacancyDetail)
                     }
-                    is VacancyUiState.NotFound -> {
+                    is VacancyState.NotFound -> {
                         ShowNotFoundPlaceHolder()
                     }
                     else -> {
@@ -382,8 +306,8 @@ fun VacancyEasyCard(vacancyDetail: VacancyDetail) {
 }
 
 @Composable
-fun DescriptionVacancy(html: String?) {
-    val blocks = remember(html) { parseHtmlToBlocks(html) }
+fun DescriptionVacancy(description: String?) {
+    val blocks = remember(description) { parseHtmlToBlocks(description) }
 
     Column{
         blocks.forEach { block ->
@@ -458,10 +382,4 @@ fun parseHtmlToBlocks(html: String?): List<DescriptionBlocksFromHtml> {
         }
     }
     return blocks
-}
-
-@Preview
-@Composable
-fun PreviewVacancyDetail() {
-    //VacancyScreen("1")
 }
