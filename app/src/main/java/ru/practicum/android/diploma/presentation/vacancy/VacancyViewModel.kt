@@ -1,6 +1,8 @@
 package ru.practicum.android.diploma.presentation.vacancy
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +19,21 @@ class VacancyViewModel(
     private val vacancyId: String = checkNotNull(savedStateHandle["vacancyId"])
     private val _state = MutableStateFlow<VacancyState>(VacancyState.Loading)
     val state: StateFlow<VacancyState> = _state
+
+    private val vacancyUiStateLiveData = MutableLiveData<VacancyUiState>()
+    fun observeVacancyUiState(): LiveData<VacancyUiState> = vacancyUiStateLiveData
+
+    fun getVacancyDetail() {
+
+    }
+
+    fun shareVacancy() {
+
+    }
+
+    fun addToFavorites() {
+
+    }
 
     private lateinit var vacancyDetail: VacancyDetail
 
@@ -63,4 +80,7 @@ class VacancyViewModel(
     fun onPhoneNumberClicked(phone: String) {
         interactor.callNumber(phone)
     }
+
+    private val vacancyUiStateLiveData = MutableLiveData<VacancyUiState>()
+    fun observeVacancyUiState(): LiveData<VacancyUiState> = vacancyUiStateLiveData
 }
