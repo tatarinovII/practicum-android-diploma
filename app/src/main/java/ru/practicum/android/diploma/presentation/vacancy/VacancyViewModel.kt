@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.api.ResponseException
 import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
 import ru.practicum.android.diploma.domain.models.VacancyDetail
+import ru.practicum.android.diploma.util.debounce
 
 class VacancyViewModel(
     savedStateHandle: SavedStateHandle,
@@ -21,6 +22,15 @@ class VacancyViewModel(
     val state: StateFlow<VacancyState> = _state
 
     private lateinit var vacancyDetail: VacancyDetail
+
+    private val debounceClick = debounce<Boolean>(
+        delayMillis = 2000L,
+        coroutineScope = viewModelScope,
+        useLastParam = false
+    ) { status ->
+        isClickAllowed = status
+    }
+    private var isClickAllowed: Boolean = true
 
     init {
         loadData()
@@ -50,13 +60,18 @@ class VacancyViewModel(
     }
 
     fun onButtonFavoriteClicked() {
-        viewModelScope.launch {
-            val isFavorite = interactor.isFavorite(vacancyId).fold(onSuccess = { it }, onFailure = { false })
-            if (isFavorite) {
-                interactor.deleteFromFavorite(vacancyId)
-            } else interactor.addToFavorite(vacancyDetail)
+        if (isClickAllowed) {
+            isClickAllowed = false
 
-            _state.update { if (it is VacancyState.Content) it.copy(isFavorite = !isFavorite) else it }
+            viewModelScope.launch {
+                val isFavorite = interactor.isFavorite(vacancyId).fold(onSuccess = { it }, onFailure = { false })
+                if (isFavorite) {
+                    interactor.deleteFromFavorite(vacancyId)
+                } else interactor.addToFavorite(vacancyDetail)
+
+                _state.update { if (it is VacancyState.Content) it.copy(isFavorite = !isFavorite) else it }
+                debounceClick(true)
+            }
         }
     }
 
