@@ -1,8 +1,12 @@
 package ru.practicum.android.diploma.data.repository
 
 import ru.practicum.android.diploma.data.NetworkClient
+import ru.practicum.android.diploma.data.db.converter.Converters
+import ru.practicum.android.diploma.data.db.dao.VacancyDao
+import ru.practicum.android.diploma.data.db.entity.VacancyFavoriteEntity
 import ru.practicum.android.diploma.data.dto.vacancy.VacancyDto
 import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
+import ru.practicum.android.diploma.data.externalNavigator.ExternalNavigator
 import ru.practicum.android.diploma.data.mappers.toDomain
 import ru.practicum.android.diploma.data.network.ResponseCode.NOT_FOUND
 import ru.practicum.android.diploma.data.network.ResponseCode.NO_CONNECTION
@@ -16,7 +20,10 @@ import ru.practicum.android.diploma.domain.repository.VacancyRepository
 import java.io.IOException
 
 class VacancyRepositoryImpl(
-    private val networkClient: NetworkClient
+    private val networkClient: NetworkClient,
+    private val dao: VacancyDao,
+    private val converter: Converters,
+    private val externalNavigator: ExternalNavigator
 ) : VacancyRepository {
 
     override suspend fun searchVacancies(
@@ -72,5 +79,37 @@ class VacancyRepositoryImpl(
             SERVER_ERROR -> Result.failure(Exception("Ошибка сервера"))
             else -> Result.failure(Exception("Ошибка загрузки деталей (код ${response.resultCode})"))
         }
+    }
+
+    override suspend fun isFavorite(vacancyId: String): Result<Boolean> {
+        return try {
+            Result.success(dao.isFavorite(vacancyId))
+        } catch (e: Exception) {
+            Result.failure(exception = e)
+        }
+    }
+
+    override suspend fun addToFavorite(vacancy: VacancyDetail) {
+        dao.insert(
+            VacancyFavoriteEntity(
+                id = vacancy.id, vacancyJson = converter.map(vacancy)
+            )
+        )
+    }
+
+    override suspend fun deleteFromFavorite(vacancyId: String) {
+        dao.deleteById(vacancyId)
+    }
+
+    override fun shareVacancy(link: String) {
+        externalNavigator.shareLink(link)
+    }
+
+    override fun callNumber(number: String) {
+        externalNavigator.openPhone(number)
+    }
+
+    override fun sendEmail(email: String) {
+        externalNavigator.openEmail(email)
     }
 }

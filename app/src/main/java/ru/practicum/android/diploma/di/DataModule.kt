@@ -11,6 +11,7 @@ import ru.practicum.android.diploma.data.network.api.VacancyApi
 import ru.practicum.android.diploma.data.db.AppDatabase
 import ru.practicum.android.diploma.data.db.converter.Converters
 import ru.practicum.android.diploma.data.db.dao.VacancyDao
+import ru.practicum.android.diploma.data.externalNavigator.ExternalNavigator
 import ru.practicum.android.diploma.data.network.RetrofitNetworkClient
 
 val dataModule = module {
@@ -37,4 +38,8 @@ val dataModule = module {
     single<VacancyDao> { get<AppDatabase>().vacancyDao() }
 
     factory { Converters() }
+
+    single<ExternalNavigator> {
+        ExternalNavigator(get())
+    }
 }
