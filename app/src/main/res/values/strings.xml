@@ -10,6 +10,8 @@
     <string name="share">Поделиться</string>
     <string name="favorite">Избранное</string>
     <string name="experience">Требуемый опыт</string>
+    <string name="skills">Ключевые навыки</string>
+    <string name="contacts">Контакты</string>
     <string name="vacancy_description">Описание вакансии</string>
     <string name="responsibilities">Обязанности</string>
     <string name="servers_error_vacancy">Ошибка сервера</string>
