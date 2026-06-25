@@ -5,7 +5,16 @@
     <string name="title_favorites">Избранное</string>
     <string name="title_team">Команда</string>
     <string name="title_search">Поиск вакансий</string>
+    <string name="title_vacancy">Вакансия</string>
     <string name="filter">Фильтр</string>
+    <string name="share">Поделиться</string>
+    <string name="favorite">Избранное</string>
+    <string name="experience">Требуемый опыт</string>
+    <string name="vacancy_description">Описание вакансии</string>
+    <string name="responsibilities">Обязанности</string>
+    <string name="servers_error_vacancy">Ошибка сервера</string>
+    <string name="vacancy_not_found">Вакансия не найдена или удалена</string>
+    <string name="back">Назад</string>
     <string name="search">Поиск</string>
     <string name="search_hint">Введите запрос</string>
     <string name="search_placeholder_hint">Здесь будут вакансии</string>
