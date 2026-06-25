@@ -28,4 +28,6 @@
     <string name="no_internet">Нет интернета</string>
     <string name="not_found">Не удалось получить список вакансий</string>
     <string name="server_error">Ошибка сервера</string>
+    <string name="add_to_favorite">Добавить в избранное</string>
+    <string name="empty_list">Список пуст</string>
 </resources>

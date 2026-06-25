@@ -23,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,6 +45,7 @@ import ru.practicum.android.diploma.domain.models.VacancyDetail
 import ru.practicum.android.diploma.presentation.vacancy.VacancyState
 import ru.practicum.android.diploma.presentation.vacancy.VacancyViewModel
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
+import ru.practicum.android.diploma.ui.theme.Red
 import ru.practicum.android.diploma.util.formatSalary
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,6 +81,9 @@ fun VacancyScreen(
                         )
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
                 actions = {
                     IconButton(
                         onClick = { viewModel.onButtonShareClicked() },
@@ -102,11 +107,20 @@ fun VacancyScreen(
                             end = 8.dp
                         )
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_favorite_24px),
-                            contentDescription = stringResource(R.string.favorite),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        if (state is VacancyState.Content && (state as VacancyState.Content).isFavorite) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_favorites_on__24px),
+                                contentDescription = stringResource(R.string.favorite),
+                                tint = Red
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_favorites_off__24px),
+                                contentDescription = stringResource(R.string.favorite),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
                     }
                 }
             )

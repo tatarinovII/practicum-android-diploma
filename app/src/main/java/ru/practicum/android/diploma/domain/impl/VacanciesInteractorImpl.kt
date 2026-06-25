@@ -1,8 +1,10 @@
 package ru.practicum.android.diploma.domain.impl
 
 import ru.practicum.android.diploma.data.externalNavigator.ExternalNavigator
+import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
 import ru.practicum.android.diploma.domain.models.SearchResult
+import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.VacancyDetail
 import ru.practicum.android.diploma.domain.repository.VacancyRepository
 
@@ -40,5 +42,9 @@ class VacanciesInteractorImpl(
 
     override fun sendEmail(email: String) {
         repository.sendEmail(email)
+    }
+
+    override suspend fun uploadFavoritesVacancies(): Result<Flow<List<Vacancy>>> {
+        return repository.uploadFavoritesVacancies()
     }
 }

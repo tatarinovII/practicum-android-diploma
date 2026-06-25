@@ -27,8 +27,8 @@ private const val MIN_SIZE = 3
 fun VacancyList(
     vacancies: List<Vacancy>,
     onVacancyClick: (String) -> Unit,
-    isLoadingMore: Boolean,
-    onLoadMore: () -> Unit,
+    isLoadingMore: Boolean = false,
+    onLoadMore: () -> Unit = { },
     imageLoader: ImageLoader,
     topPadding: Dp = 0.dp
 ) {
