@@ -7,9 +7,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.interactor.FilterSettingsInteractor
 import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.util.FilterEventBus
 import ru.practicum.android.diploma.util.debounce
 import java.io.IOException
 
@@ -34,11 +36,26 @@ data class SearchUiState(
 )
 
 class SearchViewModel(
+    private val filterSettingsInteractor: FilterSettingsInteractor,
+    private val filterEventBus: FilterEventBus,
     private val searchInteractor: VacanciesInteractor
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
+    private val _isFilterActive = MutableStateFlow(false)
+    val isFilterActive: StateFlow<Boolean> = _isFilterActive.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            filterEventBus.filterApplied.collect {
+                val query = _uiState.value.searchQuery
+                if (query.isNotEmpty()) {
+                    performSearch(query, resetPaging = true)
+                }
+            }
+        }
+    }
 
     private val searchDebounce = debounce<String>(
         delayMillis = 2000L,
@@ -46,6 +63,14 @@ class SearchViewModel(
         useLastParam = true
     ) { query ->
         performSearch(query, resetPaging = true)
+    }
+
+    fun refreshFilterState() {
+        viewModelScope.launch {
+            val settings = filterSettingsInteractor.getFilterSettings()
+            val active = settings.areaId != null || settings.industryId != null || settings.salary != null || settings.onlyWithSalary
+            _isFilterActive.value = active
+        }
     }
 
     fun updateQuery(query: String) {
@@ -74,7 +99,7 @@ class SearchViewModel(
 
     private fun performSearch(query: String, resetPaging: Boolean) {
         viewModelScope.launch {
-            val page = if (resetPaging) 0 else _uiState.value.currentPage + 1
+            val settings = filterSettingsInteractor.getFilterSettings()
             if (resetPaging) {
                 _uiState.update {
                     it.copy(
@@ -86,7 +111,14 @@ class SearchViewModel(
             } else {
                 _uiState.update { it.copy(isLoadingMore = true) }
             }
-            val result = searchInteractor.searchVacancies(query, page)
+            val result = searchInteractor.searchVacancies(
+                query = query,
+                page = if (resetPaging) 0 else _uiState.value.currentPage + 1,
+                areaId = settings.areaId,
+                industryId = settings.industryId,
+                salary = settings.salary,
+                onlyWithSalary = settings.onlyWithSalary
+            )
             handleSearchResult(result, resetPaging)
         }
     }

@@ -12,8 +12,15 @@ class VacanciesInteractorImpl(
     private val repository: VacancyRepository, private val externalNavigator: ExternalNavigator
 ) : VacanciesInteractor {
 
-    override suspend fun searchVacancies(query: String, page: Int): Result<SearchResult> {
-        return repository.searchVacancies(query, page)
+    override suspend fun searchVacancies(
+        query: String,
+        page: Int,
+        areaId: String?,
+        industryId: Int?,
+        salary: Int?,
+        onlyWithSalary: Boolean
+    ): Result<SearchResult> {
+        return repository.searchVacancies(query, page, areaId = areaId, industryId = industryId, salary = salary, onlyWithSalary = onlyWithSalary)
     }
 
     override suspend fun getVacancyDetail(vacancyId: String): Result<VacancyDetail> {
