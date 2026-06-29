@@ -68,7 +68,10 @@ class SearchViewModel(
     fun refreshFilterState() {
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
-            val active = settings.areaId != null || settings.industryId != null || settings.salary != null || settings.onlyWithSalary
+            val active = settings.areaId != null ||
+                settings.industryId != null ||
+                settings.salary != null ||
+                settings.onlyWithSalary
             _isFilterActive.value = active
         }
     }
