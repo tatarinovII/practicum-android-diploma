@@ -4,5 +4,4 @@ import androidx.navigation.NavController
 
 class IndustryScreen (
     navController: NavController
-) {
-}
+)
