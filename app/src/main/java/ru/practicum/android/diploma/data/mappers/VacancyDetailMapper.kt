@@ -12,12 +12,12 @@ import ru.practicum.android.diploma.data.dto.vacancydetail.SalaryDto
 import ru.practicum.android.diploma.data.dto.vacancydetail.ScheduleDto
 import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
 import ru.practicum.android.diploma.domain.models.Address
-import ru.practicum.android.diploma.domain.models.Area
 import ru.practicum.android.diploma.domain.models.Contacts
 import ru.practicum.android.diploma.domain.models.Currency
 import ru.practicum.android.diploma.domain.models.Employer
 import ru.practicum.android.diploma.domain.models.Employment
 import ru.practicum.android.diploma.domain.models.Experience
+import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.domain.models.Industry
 import ru.practicum.android.diploma.domain.models.Phone
 import ru.practicum.android.diploma.domain.models.Salary
@@ -95,8 +95,12 @@ fun EmployerDto.toDomain(): Employer {
     )
 }
 
-fun FilterAreaDto.toDomain(): Area {
-    return Area(name = name)
+fun FilterAreaDto.toDomain(): FilterArea {
+    return FilterArea(
+        id = id,
+        name = name,
+        parentId = parentId,
+        areas = areas.map { it.toDomain() })
 }
 
 fun FilterIndustryDto.toDomain(): Industry {
