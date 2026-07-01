@@ -55,10 +55,10 @@ fun AppNavHost() {
                 }
             }
             composable(Route.AREA.name) {
-                AreaScreen()
+                AreaScreen(navController)
             }
             composable(Route.COUNTRY.name) {
-                CountryScreen()
+                CountryScreen(navController)
             }
         }
     }

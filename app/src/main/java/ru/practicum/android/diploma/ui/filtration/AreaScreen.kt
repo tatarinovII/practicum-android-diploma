@@ -60,9 +60,9 @@ fun AreaScreen(
                     IconButton(
                         onClick = {},
                         modifier = Modifier.padding(
-                                vertical = 8.dp,
-                                horizontal = 4.dp
-                            )
+                            vertical = 8.dp,
+                            horizontal = 4.dp
+                        )
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_back_24px),
