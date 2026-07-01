@@ -45,8 +45,6 @@ fun AppNavHost() {
 
             // Экраны без нижней панели
             composable(Route.FILTER.name) { FiltrationScreen(navController) }
-            composable(Route.FILTER_AREA.name) { AreaScreen(navController) }
-            composable(Route.FILTER_INDUSTRY.name) { IndustryScreen(navController) }
             composable(
                 route = "${Route.VACANCY.name}/{vacancyId}",
                 arguments = listOf(navArgument("vacancyId") { type = NavType.StringType })

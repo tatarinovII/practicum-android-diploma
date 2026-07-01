@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.interactor.AreaInteractor
 
 class AreaViewModel(
     private val areaInteractor: AreaInteractor
@@ -21,12 +22,12 @@ class AreaViewModel(
 
     fun getCountries() {
         viewModelScope.launch {
-            areaInteractor.getCountries()
+            //areaInteractor.getCountries()
         }
     }
 
     fun getRegions() {
-        areaInteractor.getRegions()
+        //areaInteractor.getRegions()
     }
 
     fun clearCountry() {
