@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.presentation.filter.AreaUiState
 import ru.practicum.android.diploma.presentation.filter.AreaViewModel
 import ru.practicum.android.diploma.ui.navigation.Route
 import ru.practicum.android.diploma.ui.theme.Grey
@@ -77,18 +78,17 @@ fun AreaScreen(
 
             FilterOptionRow(
                 label = stringResource(R.string.country),
-                value =  "",
+                value = (uiState as AreaUiState.Content).country ?: "",
                 onClick = { navController.navigate(Route.COUNTRY.name) },
                 onClear = { viewModel.clearCountry() }
             )
 
             FilterOptionRow(
                 label = stringResource(R.string.region),
-                value =  "",
+                value = (uiState as AreaUiState.Content).region ?: "",
                 onClick = { navController.navigate(Route.REGION.name) },
                 onClear = { viewModel.clearRegion() }
             )
-
         }
     }
 }
@@ -105,7 +105,7 @@ fun FilterOptionRow(
             .fillMaxWidth()
             .height(60.dp)
             .padding(horizontal = 16.dp)
-            .clickable { onClick },
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (value.isEmpty()) {

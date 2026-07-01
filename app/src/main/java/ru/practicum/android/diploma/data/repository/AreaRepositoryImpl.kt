@@ -15,7 +15,7 @@ import ru.practicum.android.diploma.domain.repository.AreaRepository
 class AreaRepositoryImpl(
     private val networkClient: NetworkClient
 ) : AreaRepository {
-    override suspend fun getCountries(): Flow<List<FilterArea>> = flow {
+    override suspend fun getAreas(): Flow<List<FilterArea>> = flow {
         val response = networkClient.requestFilterArea()
         when (response.resultCode) {
             SUCCESS -> {

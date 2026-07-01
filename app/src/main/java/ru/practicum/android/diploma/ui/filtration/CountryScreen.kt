@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.presentation.filter.AreaViewModel
 import ru.practicum.android.diploma.ui.navigation.Route
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
@@ -36,6 +38,8 @@ fun CountryScreen(
     navController: NavController,
     viewModel: AreaViewModel = koinViewModel()
 ) {
+
+    val countries = viewModel.countries.collectAsState()
 
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -72,9 +76,11 @@ fun CountryScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
             CountryContent(
-                countries = viewModel.countries,
+                countries = countries.value,
                 onCountryClick = {
+                    viewModel.setCountry(it)
                     navController.navigate(Route.AREA.name)
                 })
         }
@@ -83,15 +89,15 @@ fun CountryScreen(
 
 @Composable
 fun CountryContent(
-    countries: List<String>,
-    onCountryClick: (String) -> Unit
+    countries: List<FilterArea>,
+    onCountryClick: (FilterArea) -> Unit
 ) {
     LazyColumn(
         contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         items(items = countries) { country ->
             CountryItem(
-                country = country,
+                country = country.name,
                 onClick = { onCountryClick(country) }
             )
         }

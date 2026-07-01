@@ -6,6 +6,8 @@ sealed interface AreaUiState {
         val region: String? = null,
     ) : AreaUiState
 
+    object Loading : AreaUiState
+
     data class Error(
         val errorMessage: String
     ) : AreaUiState

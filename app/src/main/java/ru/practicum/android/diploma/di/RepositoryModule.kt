@@ -11,6 +11,6 @@ import ru.practicum.android.diploma.domain.repository.VacancyRepository
 
 val repositoryModule = module {
     single<VacancyRepository> { VacancyRepositoryImpl(get(), get(), get()) }
-    single<AreaRepository> { AreaRepositoryImpl(get()) }
     single<FilterSettingsRepository> { FilterSettingsRepositoryImpl(androidContext()) }
+    single<AreaRepository> { AreaRepositoryImpl(get()) }
 }

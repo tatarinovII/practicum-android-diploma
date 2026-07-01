@@ -10,6 +10,6 @@ import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
 
 val interactorModule = module {
     factory<VacanciesInteractor> { VacanciesInteractorImpl(get()) }
-    factory<AreaInteractor> { AreaInteractorImpl(get()) }
     factory<FilterSettingsInteractor> { FilterSettingsInteractorImpl(get()) }
+    factory<AreaInteractor> { AreaInteractorImpl(get()) }
 }
