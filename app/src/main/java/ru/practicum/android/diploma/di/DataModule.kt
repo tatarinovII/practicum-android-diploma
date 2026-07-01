@@ -13,6 +13,7 @@ import ru.practicum.android.diploma.data.db.converter.Converters
 import ru.practicum.android.diploma.data.db.dao.VacancyDao
 import ru.practicum.android.diploma.data.externalNavigator.ExternalNavigator
 import ru.practicum.android.diploma.data.network.RetrofitNetworkClient
+import ru.practicum.android.diploma.util.FilterEventBus
 
 val dataModule = module {
     single<VacancyApi> {
@@ -48,4 +49,6 @@ val dataModule = module {
     single<ExternalNavigator> {
         ExternalNavigator(get())
     }
+
+    single { FilterEventBus() }
 }

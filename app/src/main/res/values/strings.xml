@@ -34,4 +34,15 @@
     <string name="server_error">Ошибка сервера</string>
     <string name="add_to_favorite">Добавить в избранное</string>
     <string name="empty_list">Список пуст</string>
+    <string name="select_region">Выбор региона</string>
+    <string name="select_industry">Выбор отрасли</string>
+    <string name="filter_settings">Настройки фильтрации</string>
+    <string name="place_of_work">Место работы</string>
+    <string name="industry">Отрасль</string>
+    <string name="expected_salary">Ожидаемая зарплата</string>
+    <string name="enter_amount">Введите сумму</string>
+    <string name="hide_without_salary">Не показывать без зарплаты</string>
+    <string name="apply">Применить</string>
+    <string name="reset">Сбросить</string>
+    <string name="clear">Очистить</string>
 </resources>

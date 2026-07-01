@@ -42,7 +42,6 @@ class RetrofitNetworkClient(
         if (!isConnected()) {
             return Response().apply { resultCode = NO_CONNECTION }
         }
-
         return withContext(Dispatchers.IO) {
             try {
                 val industries = vacancyApi.getIndustry(token)
