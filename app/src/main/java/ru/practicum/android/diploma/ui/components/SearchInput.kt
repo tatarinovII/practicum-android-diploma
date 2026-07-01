@@ -45,7 +45,7 @@ fun SearchInput(
             onValueChange = onQueryChange,
             modifier = Modifier
                 .fillMaxSize()
-                .height((height - 16).dp),
+                .height(56.dp),
             placeholder = {
                 Text(
                     text = placeholder,

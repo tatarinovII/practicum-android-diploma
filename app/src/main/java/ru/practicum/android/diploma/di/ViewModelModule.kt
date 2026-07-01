@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.di
 
-import androidx.lifecycle.SavedStateHandle
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ru.practicum.android.diploma.presentation.favorites.FavoritesViewModel
@@ -13,6 +12,6 @@ val viewModelModule = module {
     viewModel { SearchViewModel(get(), get(), get()) }
     viewModel { VacancyViewModel(get(), get()) }
     viewModel { FavoritesViewModel(get()) }
-    single { FilterViewModel(get(), get()) }
-    viewModel { (handle: SavedStateHandle) -> IndustryViewModel(get(), get()) }
+    viewModel { FilterViewModel(get(), get()) }
+    viewModel { IndustryViewModel(get(), get()) }
 }
