@@ -9,6 +9,9 @@ enum class Route {
     AREA,
     COUNTRY,
     REGION
+    FILTER_AREA,
+    FILTER_INDUSTRY,
+    VACANCY
 }
 
 

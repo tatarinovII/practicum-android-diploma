@@ -21,6 +21,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import okhttp3.OkHttpClient
@@ -56,6 +58,12 @@ fun MainScreen(
     viewModel: SearchViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    val isFilterActive by viewModel.isFilterActive.collectAsState()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    LaunchedEffect(navBackStackEntry) {
+        viewModel.refreshFilterState()
+    }
 
     val context = LocalContext.current
     val imageLoader = remember {
@@ -90,9 +98,11 @@ fun MainScreen(
                         modifier = Modifier.size(48.dp).padding(8.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_filter_off__24px),
+                            painter = painterResource(
+                                if (isFilterActive) R.drawable.ic_filter_on__24px else R.drawable.ic_filter_off__24px
+                            ),
                             contentDescription = stringResource(R.string.filter),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = if (isFilterActive) Color.Unspecified else MaterialTheme.colorScheme.primary
                         )
                     }
                 },

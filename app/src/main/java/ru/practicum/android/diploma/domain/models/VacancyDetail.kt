@@ -11,7 +11,7 @@ data class VacancyDetail(
     val employment: Employment?,
     val contacts: Contacts?,
     val employer: Employer?,
-    val area: Area?,
+    val area: FilterArea?,
     val skills: List<String>?,
     val url: String?,
     val industry: Industry?
@@ -50,10 +50,6 @@ data class Phone(
 data class Employer(
     val name: String?,
     val logo: String?
-)
-
-data class Area(
-    val name: String?
 )
 
 data class Industry(
