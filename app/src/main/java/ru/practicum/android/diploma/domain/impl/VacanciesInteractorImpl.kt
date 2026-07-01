@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.domain.impl
 
-import ru.practicum.android.diploma.data.externalNavigator.ExternalNavigator
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
 import ru.practicum.android.diploma.domain.models.SearchResult
@@ -9,11 +8,25 @@ import ru.practicum.android.diploma.domain.models.VacancyDetail
 import ru.practicum.android.diploma.domain.repository.VacancyRepository
 
 class VacanciesInteractorImpl(
-    private val repository: VacancyRepository, private val externalNavigator: ExternalNavigator
+    private val repository: VacancyRepository
 ) : VacanciesInteractor {
 
-    override suspend fun searchVacancies(query: String, page: Int): Result<SearchResult> {
-        return repository.searchVacancies(query, page)
+    override suspend fun searchVacancies(
+        query: String,
+        page: Int,
+        areaId: String?,
+        industryId: Int?,
+        salary: Int?,
+        onlyWithSalary: Boolean
+    ): Result<SearchResult> {
+        return repository.searchVacancies(
+            query = query,
+            page = page,
+            areaId = areaId,
+            industryId = industryId,
+            salary = salary,
+            onlyWithSalary = onlyWithSalary
+        )
     }
 
     override suspend fun getVacancyDetail(vacancyId: String): Result<VacancyDetail> {
