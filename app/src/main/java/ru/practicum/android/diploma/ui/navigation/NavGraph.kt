@@ -12,6 +12,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import ru.practicum.android.diploma.ui.favorites.FavoritesScreen
+import ru.practicum.android.diploma.ui.filtration.AreaScreen
+import ru.practicum.android.diploma.ui.filtration.CountryScreen
 import ru.practicum.android.diploma.ui.filtration.FiltrationScreen
 import ru.practicum.android.diploma.ui.main.MainScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
@@ -51,6 +53,12 @@ fun AppNavHost() {
                 backStackEntry.arguments?.getString("vacancyId")?.let { vacancyId ->
                     VacancyScreen(navController)
                 }
+            }
+            composable(Route.AREA.name) {
+                AreaScreen()
+            }
+            composable(Route.COUNTRY.name) {
+                CountryScreen()
             }
         }
     }

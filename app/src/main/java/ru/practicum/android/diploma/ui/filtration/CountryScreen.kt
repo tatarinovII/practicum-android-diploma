@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.koin.androidx.compose.koinViewModel
@@ -34,11 +33,9 @@ import ru.practicum.android.diploma.ui.theme.MyAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryScreen(
-    //navController: NavController,
-    //viewModel: AreaViewModel = koinViewModel()
+    navController: NavController,
+    viewModel: AreaViewModel = koinViewModel()
 ) {
-
-    val countries = listOf<String>("Египет", "Россия", "Чехия")
 
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -76,10 +73,9 @@ fun CountryScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             CountryContent(
-                //countries = viewModel.countries,
-                countries = countries,
+                countries = viewModel.countries,
                 onCountryClick = {
-                    /*navController.navigate(Route.AREA.name)*/
+                    navController.navigate(Route.AREA.name)
                 })
         }
     }
@@ -128,8 +124,10 @@ fun CountryItem(
     }
 }
 
+/*
 @Preview
 @Composable
 fun CountryScreenPreview() {
     CountryScreen()
-}
+}*/
+
