@@ -4,6 +4,4 @@ import kotlinx.coroutines.flow.Flow
 
 interface AreaInteractor {
     suspend fun getCountries(): Flow<List<String>>
-    fun setCountry(country: String)
-    fun clearCountry()
 }
