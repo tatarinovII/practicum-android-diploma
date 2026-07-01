@@ -103,11 +103,12 @@ fun CountryItem(
     country: String,
     onClick: () -> Unit
 ) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(60.dp)
-        .padding(horizontal = 16.dp)
-        .clickable { onClick }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(horizontal = 16.dp)
+            .clickable { onClick }
     ) {
         Text(
             text = country,

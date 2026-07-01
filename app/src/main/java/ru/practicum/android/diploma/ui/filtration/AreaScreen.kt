@@ -60,9 +60,9 @@ fun AreaScreen(
                     IconButton(
                         onClick = {},
                         modifier = Modifier.padding(
-                                vertical = 8.dp,
-                                horizontal = 4.dp
-                            )
+                            vertical = 8.dp,
+                            horizontal = 4.dp
+                        )
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_back_24px),
@@ -77,14 +77,14 @@ fun AreaScreen(
 
             FilterOptionRow(
                 label = stringResource(R.string.country),
-                value = uiState.country ?: "",
+                value =  "",
                 onClick = { navController.navigate(Route.COUNTRY.name) },
                 onClear = { viewModel.clearCountry() }
             )
 
             FilterOptionRow(
                 label = stringResource(R.string.region),
-                value = uiState.region ?: "",
+                value =  "",
                 onClick = { navController.navigate(Route.REGION.name) },
                 onClear = { viewModel.clearRegion() }
             )
