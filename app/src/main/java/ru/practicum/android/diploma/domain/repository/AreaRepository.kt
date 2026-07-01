@@ -1,8 +1,8 @@
-package ru.practicum.android.diploma.domain.interactor
+package ru.practicum.android.diploma.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface AreaInteractor {
+interface AreaRepository {
     suspend fun getCountries(): Flow<List<String>>
     fun setCountry(country: String)
     fun clearCountry()

@@ -8,8 +8,8 @@ class AreaInteractorImpl(private val repository: AreaRepository) : AreaInteracto
         return repository.getCountries()
     }
 
-    override fun setCountry() {
-        repository.setCountry()
+    override fun setCountry(country: String) {
+        repository.setCountry(country)
     }
 
     override fun clearCountry() {
