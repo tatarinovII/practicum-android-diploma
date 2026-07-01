@@ -2,7 +2,6 @@ package ru.practicum.android.diploma.data.dto.vacancydetail
 
 import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
 import ru.practicum.android.diploma.data.dto.filterindustry.FilterIndustryDto
-import ru.practicum.android.diploma.data.network.Response
 
 data class VacancyDetailDto(
     val id: String,
@@ -19,4 +18,4 @@ data class VacancyDetailDto(
     val skills: List<String>,
     val url: String,
     val industry: FilterIndustryDto
-) : Response()
+)

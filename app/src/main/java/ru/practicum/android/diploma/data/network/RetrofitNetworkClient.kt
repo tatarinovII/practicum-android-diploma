@@ -6,6 +6,10 @@ import android.net.NetworkCapabilities
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.data.NetworkClient
+import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
+import ru.practicum.android.diploma.data.dto.filterindustry.FilterIndustryDto
+import ru.practicum.android.diploma.data.dto.vacancy.VacancyDto
+import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
 import ru.practicum.android.diploma.data.network.ResponseCode.BAD_REQUEST
 import ru.practicum.android.diploma.data.network.ResponseCode.NOT_FOUND
 import ru.practicum.android.diploma.data.network.ResponseCode.NO_CONNECTION
@@ -20,70 +24,69 @@ class RetrofitNetworkClient(
     private val token: String =
         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
 
-    override suspend fun requestFilterArea(): Response {
+    override suspend fun requestFilterArea(): Response<List<FilterAreaDto>> {
         if (!isConnected()) {
-            return Response().apply { resultCode = NO_CONNECTION }
+            return Response(resultCode = NO_CONNECTION)
         }
         return withContext(Dispatchers.IO) {
             try {
                 val areas = vacancyApi.getArea(token)
                 if (areas.isEmpty()) {
-                    Response().apply { resultCode = BAD_REQUEST }
+                    Response(resultCode = BAD_REQUEST)
                 } else {
-                    Response().apply { resultCode = SUCCESS }
+                    Response(resultCode = SUCCESS, data = areas)
                 }
             } catch (e: Throwable) {
-                Response().apply { resultCode = SERVER_ERROR }
+                Response(resultCode = SERVER_ERROR)
             }
         }
     }
 
-    override suspend fun requestFilterIndustry(): Response {
+    override suspend fun requestFilterIndustry(): Response<List<FilterIndustryDto>> {
         if (!isConnected()) {
-            return Response().apply { resultCode = NO_CONNECTION }
+            return Response(resultCode = NO_CONNECTION)
         }
-
         return withContext(Dispatchers.IO) {
             try {
                 val industries = vacancyApi.getIndustry(token)
                 if (industries.isEmpty()) {
-                    Response().apply { resultCode = BAD_REQUEST }
+                    Response(resultCode = BAD_REQUEST)
                 } else {
-                    Response().apply { resultCode = SUCCESS }
+                    Response(resultCode = SUCCESS, data = industries)
                 }
             } catch (e: Throwable) {
-                Response().apply { resultCode = SERVER_ERROR }
+                Response(resultCode = SERVER_ERROR)
             }
         }
     }
 
-    override suspend fun requestVacancyResponse(dto: VacancyRequest): Response {
+    override suspend fun requestVacancyResponse(dto: VacancyRequest): Response<VacancyDto> {
         if (!isConnected()) {
-            return Response().apply { resultCode = NO_CONNECTION }
+            return Response(resultCode = NO_CONNECTION)
         }
         return withContext(Dispatchers.IO) {
             try {
                 val vacancies = vacancyApi.searchVacancy(token, dto.options)
-                vacancies.apply { resultCode = SUCCESS }
+                Response(resultCode = SUCCESS, data = vacancies)
             } catch (e: Throwable) {
-                Response().apply { resultCode = SERVER_ERROR }
+                Response(resultCode = SERVER_ERROR)
             }
         }
     }
 
-    override suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response {
+    override suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response<VacancyDetailDto> {
         if (!isConnected()) {
-            return Response().apply { resultCode = NO_CONNECTION }
+            return Response(resultCode = NO_CONNECTION)
         }
         return withContext(Dispatchers.IO) {
             try {
                 val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
-                vacancyDetail.apply { resultCode = SUCCESS }
+                Response(resultCode = SUCCESS, data = vacancyDetail)
             } catch (e: Throwable) {
                 if (e.message.toString() == "HTTP 404 Not Found") {
-                    Response().apply { resultCode = NOT_FOUND }
+                    Response(resultCode = NOT_FOUND)
                 } else {
-                    Response().apply { resultCode = SERVER_ERROR }
+                    Response(resultCode = SERVER_ERROR)
                 }
             }
         }
