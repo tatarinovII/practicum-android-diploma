@@ -17,20 +17,6 @@ class AreaViewModel(
     val regions = emptyList<String>()
 
     init {
-        setCountry()
-        setRegion()
-    }
-
-    fun setCountry() {
-        viewModelScope.launch {
-            areaInteractor.setCountry
-        }
-    }
-
-    fun setRegion() {
-        viewModelScope.launch {
-            areaInteractor.setRegion
-        }
     }
 
     fun getCountries() {
@@ -44,14 +30,10 @@ class AreaViewModel(
     }
 
     fun clearCountry() {
-        viewModelScope.launch {
-            areaInteractor.clearCountry
-        }
+
     }
 
     fun clearRegion() {
-        viewModelScope.launch {
-            areaInteractor.clearRegion()
-        }
+
     }
 }
