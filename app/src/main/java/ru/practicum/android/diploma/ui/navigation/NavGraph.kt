@@ -37,7 +37,7 @@ fun AppNavHost() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Route.MAIN.name) { MainScreen(navController) }
-            composable(Route.FAVORITES.name) { FavoritesScreen() }
+            composable(Route.FAVORITES.name) { FavoritesScreen(navController) }
             composable(Route.TEAM.name) { TeamScreen() }
 
             // Экраны без нижней панели
@@ -49,7 +49,7 @@ fun AppNavHost() {
                 arguments = listOf(navArgument("vacancyId") { type = NavType.StringType })
             ) { backStackEntry ->
                 backStackEntry.arguments?.getString("vacancyId")?.let { vacancyId ->
-                    VacancyScreen(vacancyId)
+                    VacancyScreen(navController)
                 }
             }
         }

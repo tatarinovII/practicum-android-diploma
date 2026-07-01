@@ -3,32 +3,90 @@ package ru.practicum.android.diploma.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.data.NetworkClient
-import ru.practicum.android.diploma.data.dto.Response
-import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
-import ru.practicum.android.diploma.data.dto.filterindustry.FilterIndustryDto
-import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
-import ru.practicum.android.diploma.data.dto.vacancyresponse.VacancyDto
+import ru.practicum.android.diploma.data.network.ResponseCode.BAD_REQUEST
+import ru.practicum.android.diploma.data.network.ResponseCode.NOT_FOUND
+import ru.practicum.android.diploma.data.network.ResponseCode.NO_CONNECTION
+import ru.practicum.android.diploma.data.network.ResponseCode.SERVER_ERROR
+import ru.practicum.android.diploma.data.network.ResponseCode.SUCCESS
+import ru.practicum.android.diploma.data.network.api.VacancyApi
 
-class RetrofitNetworkClient(private val context: Context, private val vacancyApi: VacancyApi) : NetworkClient {
+class RetrofitNetworkClient(
+    private val context: Context,
+    private val vacancyApi: VacancyApi
+) : NetworkClient {
+    private val token: String =
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
 
-    override suspend fun requestFilterArea(dto: FilterAreaDto): Response {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun requestFilterIndustry(dto: FilterIndustryDto): Response {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun requestVacancyResponse(dto: VacancyDto): Response {
+    override suspend fun requestFilterArea(): Response {
         if (!isConnected()) {
-            return Response().apply { resultCode = -1 }
+            return Response().apply { resultCode = NO_CONNECTION }
         }
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            try {
+                val areas = vacancyApi.getArea(token)
+                if (areas.isEmpty()) {
+                    Response().apply { resultCode = BAD_REQUEST }
+                } else {
+                    Response().apply { resultCode = SUCCESS }
+                }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = SERVER_ERROR }
+            }
+        }
     }
 
-    override suspend fun requestVacancyDetail(dto: VacancyDetailDto): Response {
-        TODO("Not yet implemented")
+    override suspend fun requestFilterIndustry(): Response {
+        if (!isConnected()) {
+            return Response().apply { resultCode = NO_CONNECTION }
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val industries = vacancyApi.getIndustry(token)
+                if (industries.isEmpty()) {
+                    Response().apply { resultCode = BAD_REQUEST }
+                } else {
+                    Response().apply { resultCode = SUCCESS }
+                }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = SERVER_ERROR }
+            }
+        }
+    }
+
+    override suspend fun requestVacancyResponse(dto: VacancyRequest): Response {
+        if (!isConnected()) {
+            return Response().apply { resultCode = NO_CONNECTION }
+        }
+        return withContext(Dispatchers.IO) {
+            try {
+                val vacancies = vacancyApi.searchVacancy(token, dto.options)
+                vacancies.apply { resultCode = SUCCESS }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = SERVER_ERROR }
+            }
+        }
+    }
+
+    override suspend fun requestVacancyDetail(dto: VacancyDetailRequest): Response {
+        if (!isConnected()) {
+            return Response().apply { resultCode = NO_CONNECTION }
+        }
+        return withContext(Dispatchers.IO) {
+            try {
+                val vacancyDetail = vacancyApi.getVacancyDetail(token, dto.vacancyId)
+                vacancyDetail.apply { resultCode = SUCCESS }
+            } catch (e: Throwable) {
+                if (e.message.toString() == "HTTP 404 Not Found") {
+                    Response().apply { resultCode = NOT_FOUND }
+                } else {
+                    Response().apply { resultCode = SERVER_ERROR }
+                }
+            }
+        }
     }
 
     private fun isConnected(): Boolean {
@@ -43,6 +101,4 @@ class RetrofitNetworkClient(private val context: Context, private val vacancyApi
         }
         return false
     }
-
-
 }

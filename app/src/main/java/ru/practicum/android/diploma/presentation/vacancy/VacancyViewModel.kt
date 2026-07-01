@@ -1,0 +1,89 @@
+package ru.practicum.android.diploma.presentation.vacancy
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.api.ResponseException
+import ru.practicum.android.diploma.domain.interactor.VacanciesInteractor
+import ru.practicum.android.diploma.domain.models.VacancyDetail
+import ru.practicum.android.diploma.util.debounce
+
+class VacancyViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val interactor: VacanciesInteractor
+) : ViewModel() {
+
+    private val vacancyId: String = checkNotNull(savedStateHandle["vacancyId"])
+    private val _state = MutableStateFlow<VacancyState>(VacancyState.Loading)
+    val state: StateFlow<VacancyState> = _state
+
+    private lateinit var vacancyDetail: VacancyDetail
+
+    private val debounceClick = debounce<Boolean>(
+        delayMillis = 2000L,
+        coroutineScope = viewModelScope,
+        useLastParam = false
+    ) { status ->
+        isClickAllowed = status
+    }
+    private var isClickAllowed: Boolean = true
+
+    init {
+        loadData()
+    }
+
+    fun loadData() {
+        viewModelScope.launch {
+            val isFavorite = interactor.isFavorite(vacancyId).fold(
+                onSuccess = { it },
+                onFailure = { false },
+            )
+            interactor.getVacancyDetail(vacancyId).fold(
+                onSuccess = {
+                    vacancyDetail = it
+                    _state.value = VacancyState.Content(vacancyDetail, isFavorite)
+                },
+                onFailure = {
+                    val code = (it as? ResponseException)?.responseCode
+                    when (code) {
+                        404 -> _state.value = VacancyState.NotFound
+                        else -> _state.value = VacancyState.Error
+                    }
+
+                }
+            )
+        }
+    }
+
+    fun onButtonFavoriteClicked() {
+        if (isClickAllowed) {
+            isClickAllowed = false
+
+            viewModelScope.launch {
+                val isFavorite = interactor.isFavorite(vacancyId).fold(onSuccess = { it }, onFailure = { false })
+                if (isFavorite) {
+                    interactor.deleteFromFavorite(vacancyId)
+                } else interactor.addToFavorite(vacancyDetail)
+
+                _state.update { if (it is VacancyState.Content) it.copy(isFavorite = !isFavorite) else it }
+                debounceClick(true)
+            }
+        }
+    }
+
+    fun onButtonShareClicked() {
+        interactor.shareVacancy(vacancyDetail.url.toString())
+    }
+
+    fun onEmailClicked(email: String) {
+        interactor.sendEmail(email)
+    }
+
+    fun onPhoneNumberClicked(phone: String) {
+        interactor.callNumber(phone)
+    }
+}

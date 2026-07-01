@@ -50,10 +50,9 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.androidx.ui)
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
 
     // UI layer libraries
     implementation(libs.material)
@@ -63,6 +62,8 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.ui.text)
+    implementation(libs.volley)
+    implementation(libs.androidx.runtime.livedata)
 
     testImplementation(libs.junit4)
     androidTestImplementation(libs.junit.ext)
@@ -80,14 +81,24 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.foundation)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.material.icons.extended)
 
-    //Retrofit
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
+
+    // Okhttp
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+
+    // Retrofit
     implementation(libs.retrofit)
 
-    //Coroutines
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
-    //GSON
+    // GSON
     implementation(libs.gson)
     implementation(libs.converter.gson)
 
@@ -95,4 +106,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
+
+    // JSOP
+    implementation(libs.jsoup)
 }

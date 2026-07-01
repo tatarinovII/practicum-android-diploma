@@ -6,10 +6,13 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.practicum.android.diploma.data.NetworkClient
+import ru.practicum.android.diploma.data.network.api.VacancyApi
 import ru.practicum.android.diploma.data.db.AppDatabase
 import ru.practicum.android.diploma.data.db.converter.Converters
 import ru.practicum.android.diploma.data.db.dao.VacancyDao
-import ru.practicum.android.diploma.data.network.VacancyApi
+import ru.practicum.android.diploma.data.externalNavigator.ExternalNavigator
+import ru.practicum.android.diploma.data.network.RetrofitNetworkClient
 
 val dataModule = module {
     single<VacancyApi> {
@@ -19,6 +22,8 @@ val dataModule = module {
             .build()
             .create(VacancyApi::class.java)
     }
+
+    single<NetworkClient> { RetrofitNetworkClient(androidContext(), get()) }
 
     factory { Gson() }
 
@@ -33,4 +38,8 @@ val dataModule = module {
     single<VacancyDao> { get<AppDatabase>().vacancyDao() }
 
     factory { Converters() }
+
+    single<ExternalNavigator> {
+        ExternalNavigator(get())
+    }
 }
