@@ -46,7 +46,6 @@ class FilterViewModel(
                 areaName = if (areaName.isEmpty()) null else areaName
             )
         }
-        saveSettings()
     }
 
     fun updateIndustry(industryId: Int, industryName: String) {
@@ -56,18 +55,15 @@ class FilterViewModel(
                 industryName = if (industryName.isEmpty()) null else industryName
             )
         }
-        saveSettings()
     }
 
     fun updateSalaryText(text: String) {
         val filtered = text.filter { it.isDigit() }
         _uiState.update { it.copy(salaryText = filtered) }
-        saveSettings()
     }
 
     fun toggleOnlyWithSalary() {
         _uiState.update { it.copy(onlyWithSalary = !it.onlyWithSalary) }
-        saveSettings()
     }
 
     private fun saveSettings() {
@@ -87,14 +83,16 @@ class FilterViewModel(
 
     fun applyFilter() {
         viewModelScope.launch {
+            saveSettings()
             filterEventBus.emitFilterApplied()
         }
     }
 
     fun resetFilter() {
         viewModelScope.launch {
-            filterSettingsInteractor.clearFilterSettings()
             _uiState.update { FilterUiState() }
+            saveSettings()
+            filterEventBus.emitFilterApplied()
         }
     }
 
