@@ -6,7 +6,15 @@ import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.VacancyDetail
 
 interface VacancyRepository {
-    suspend fun searchVacancies(query: String, page: Int, perPage: Int = 20): Result<SearchResult>
+    suspend fun searchVacancies(
+        query: String,
+        page: Int,
+        perPage: Int = 20,
+        areaId: String? = null,
+        industryId: Int? = null,
+        salary: Int? = null,
+        onlyWithSalary: Boolean = false
+    ): Result<SearchResult>
     suspend fun getVacancyDetail(vacancyId: String): Result<VacancyDetail>
     suspend fun isFavorite(vacancyId: String): Result<Boolean>
     suspend fun addToFavorite(vacancy: VacancyDetail)

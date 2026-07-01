@@ -31,13 +31,23 @@ class VacancyRepositoryImpl(
     override suspend fun searchVacancies(
         query: String,
         page: Int,
-        perPage: Int
+        perPage: Int,
+        areaId: String?,
+        industryId: Int?,
+        salary: Int?,
+        onlyWithSalary: Boolean
     ): Result<SearchResult> {
         val options = hashMapOf(
             "text" to query,
             "page" to page.toString(),
             "per_page" to perPage.toString()
         )
+        areaId?.let { options["area"] = it }
+        industryId?.let { options["industry"] = it.toString() }
+        salary?.let { options["salary"] = it.toString() }
+        if (onlyWithSalary) {
+            options["only_with_salary"] = "true"
+        }
         val request = VacancyRequest(options)
         val response = networkClient.requestVacancyResponse(request)
 
