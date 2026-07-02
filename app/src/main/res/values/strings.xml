@@ -13,6 +13,10 @@
     <string name="skills">Ключевые навыки</string>
     <string name="contacts">Контакты</string>
     <string name="vacancy_description">Описание вакансии</string>
+    <string name="choice_work_place">Выбор места работы</string>
+    <string name="country">Страна</string>
+    <string name="choice_country">Выбор страны</string>
+    <string name="region">Регион</string>
     <string name="responsibilities">Обязанности</string>
     <string name="servers_error_vacancy">Ошибка сервера</string>
     <string name="vacancy_not_found">Вакансия не найдена или удалена</string>

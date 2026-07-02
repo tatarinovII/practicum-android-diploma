@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import ru.practicum.android.diploma.ui.favorites.FavoritesScreen
 import ru.practicum.android.diploma.ui.filtration.AreaScreen
+import ru.practicum.android.diploma.ui.filtration.CountryScreen
 import ru.practicum.android.diploma.ui.filtration.FiltrationScreen
 import ru.practicum.android.diploma.ui.filtration.IndustryScreen
 import ru.practicum.android.diploma.ui.main.MainScreen
@@ -44,8 +45,6 @@ fun AppNavHost() {
 
             // Экраны без нижней панели
             composable(Route.FILTER.name) { FiltrationScreen(navController) }
-            composable(Route.FILTER_AREA.name) { AreaScreen(navController) }
-            composable(Route.FILTER_INDUSTRY.name) { IndustryScreen(navController) }
             composable(
                 route = "${Route.VACANCY.name}/{vacancyId}",
                 arguments = listOf(navArgument("vacancyId") { type = NavType.StringType })
@@ -53,6 +52,12 @@ fun AppNavHost() {
                 backStackEntry.arguments?.getString("vacancyId")?.let { vacancyId ->
                     VacancyScreen(navController)
                 }
+            }
+            composable(Route.AREA.name) {
+                AreaScreen(navController)
+            }
+            composable(Route.COUNTRY.name) {
+                CountryScreen(navController)
             }
         }
     }
