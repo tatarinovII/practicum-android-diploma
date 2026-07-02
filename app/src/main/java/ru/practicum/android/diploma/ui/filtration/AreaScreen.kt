@@ -149,12 +149,4 @@ fun FilterOptionRow(
             }
         }
     }
-
 }
-/*
-@Preview
-@Composable
-fun AreaScreenPreview() {
-    AreaScreen()
-}*/
-
