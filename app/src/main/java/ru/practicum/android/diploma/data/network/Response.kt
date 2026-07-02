@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.data.network
 
-open class Response() {
-    var resultCode: Int = 0
-}
+open class Response<T>(
+    var resultCode: Int = 0,
+    var data: T? = null
+)

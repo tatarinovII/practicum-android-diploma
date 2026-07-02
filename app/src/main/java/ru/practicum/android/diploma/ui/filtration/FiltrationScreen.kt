@@ -119,9 +119,8 @@ fun FiltrationScreen(
             FilterOptionRow(
                 label = stringResource(R.string.industry),
                 value = uiState.industryName ?: "",
-                onClick = {
-                    navController.navigate(Route.INDUSTRY.name)
-                }
+                onClick = { navController.navigate(Route.INDUSTRY.name) },
+                onClear = { viewModel.clearIndustry() }
             )
 
             Spacer(modifier = Modifier.height(24.dp))

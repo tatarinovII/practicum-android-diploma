@@ -29,11 +29,11 @@ class AreaViewModel(
 
     fun loadAreas() {
         viewModelScope.launch {
-            areaInteractor.getAreas()
-                .collect {
-                    areas = it
-                    _countries.value = it
-                }
+//            areaInteractor.getAreas()
+//                .collect {
+//                    areas = it
+//                    _countries.value = it
+//                }
         }
     }
 

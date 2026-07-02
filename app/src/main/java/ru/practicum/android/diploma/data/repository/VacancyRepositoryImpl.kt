@@ -5,8 +5,6 @@ import kotlinx.coroutines.flow.map
 import ru.practicum.android.diploma.data.NetworkClient
 import ru.practicum.android.diploma.data.db.dao.VacancyDao
 import ru.practicum.android.diploma.data.db.entity.VacancyFavoriteEntity
-import ru.practicum.android.diploma.data.dto.vacancy.VacancyDto
-import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
 import ru.practicum.android.diploma.data.externalNavigator.ExternalNavigator
 import ru.practicum.android.diploma.data.mappers.toDomain
 import ru.practicum.android.diploma.data.network.ResponseCode.NOT_FOUND
@@ -53,7 +51,7 @@ class VacancyRepositoryImpl(
 
         return when (response.resultCode) {
             SUCCESS -> {
-                val vacancyDto = response as? VacancyDto
+                val vacancyDto = response.data
                 if (vacancyDto == null) {
                     Result.failure(Exception("Некорректный тип ответа"))
                 } else {
@@ -80,7 +78,7 @@ class VacancyRepositoryImpl(
         val response = networkClient.requestVacancyDetail(request)
         return when (response.resultCode) {
             SUCCESS -> {
-                val detailDto = response as? VacancyDetailDto
+                val detailDto = response.data
                 if (detailDto == null) {
                     Result.failure(Exception("Некорректный тип ответа"))
                 } else {
