@@ -41,7 +41,6 @@ fun CountryScreen(
 ) {
 
     val countries = viewModel.countries.collectAsState()
-    Log.i("11111", "${countries.value.size}")
 
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -75,13 +74,15 @@ fun CountryScreen(
                     }
                 }
             )
-
             Spacer(modifier = Modifier.height(16.dp))
-
             CountryContent(
                 countries = countries.value,
                 onCountryClick = {
-                    viewModel.setCountry(it)
+                    viewModel.setCountryFromArea(it)
+                    //navController.navigate(Route.AREA.name)
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selected_country", it.name)
                     navController.navigate(Route.AREA.name)
                 })
         }
@@ -99,7 +100,7 @@ fun CountryContent(
         items(items = countries) { country ->
             CountryItem(
                 country = country.name,
-                onClick = { onCountryClick(country) }
+                onCountryClick = { onCountryClick(country) }
             )
         }
     }
@@ -108,14 +109,14 @@ fun CountryContent(
 @Composable
 fun CountryItem(
     country: String,
-    onClick: () -> Unit
+    onCountryClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
             .padding(horizontal = 16.dp)
-            .clickable { onClick }
+            .clickable { onCountryClick() }
     ) {
         Text(
             text = country,
@@ -131,11 +132,4 @@ fun CountryItem(
         )
     }
 }
-
-/*
-@Preview
-@Composable
-fun CountryScreenPreview() {
-    CountryScreen()
-}*/
 

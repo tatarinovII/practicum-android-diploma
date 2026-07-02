@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.presentation.filter
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,9 +22,10 @@ class AreaViewModel(
     private var _countries = MutableStateFlow<List<FilterArea>>(emptyList())
     val countries: StateFlow<List<FilterArea>> = _countries
 
-    private var country: FilterArea? = null
+    //var country: FilterArea? = null
 
     init {
+        Log.i("1_1", "AreaViewModel created: $this")
         loadAreas()
     }
 
@@ -37,14 +39,21 @@ class AreaViewModel(
         }
     }
 
-    fun setCountry(filterArea: FilterArea) {
-        viewModelScope.launch {
-            _uiState.value = AreaUiState.Content(country = filterArea.name)
-            country = filterArea
+    fun setCountryFromArea(filterArea: FilterArea?) {
+
+        val currentState = _uiState.value
+        if (currentState is AreaUiState.Content) {
+            _uiState.value = currentState.copy(country = filterArea?.name)
+            Log.i("2_2", "new state: ${_uiState.value}")
         }
+
+
+        //_uiState.value = AreaUiState.Content(country = filterArea?.name)
+        //Log.i("atut", "${uiState.value}")
+        //country = filterArea
     }
 
-    fun setRegion() {
+    fun setRegionFromArea() {
         viewModelScope.launch {
 //            areaInteractor.setRegion
         }
@@ -55,8 +64,9 @@ class AreaViewModel(
     }
 
     fun clearCountry() {
-        viewModelScope.launch {
-//            areaInteractor.clearCountry
+        val currentState = _uiState.value
+        if (currentState is AreaUiState.Content) {
+            _uiState.value = currentState.copy(country = "")
         }
     }
 

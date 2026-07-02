@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.filtration
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +45,9 @@ fun AreaScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+    val country = navController.previousBackStackEntry
+        ?.savedStateHandle
+        ?.get<String>("selected_country")
 
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -81,7 +85,9 @@ fun AreaScreen(
             Box(modifier = Modifier.fillMaxSize()) {
                 when(uiState) {
                     is AreaUiState.Content -> {
-                        ShowCountries(
+                        Log.i("uistatttttte", "$uiState")
+                        ShowArea(
+                            country = country.toString(),
                             uiState = uiState,
                             navController = navController,
                             viewModel = viewModel
@@ -100,7 +106,8 @@ fun AreaScreen(
 }
 
 @Composable
-fun ShowCountries(
+fun ShowArea(
+    country: String,
     uiState: AreaUiState,
     navController: NavController,
     viewModel: AreaViewModel
@@ -108,14 +115,13 @@ fun ShowCountries(
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(top = 16.dp)) {
-        //Spacer(modifier = Modifier.height(16.dp))
         FilterOptionRow(
             label = stringResource(R.string.country),
-            value = (uiState as AreaUiState.Content).country ?: "",
+            //value = (uiState as AreaUiState.Content).country ?: "",
+            value = country,
             onClick = { navController.navigate(Route.COUNTRY.name) },
             onClear = { viewModel.clearCountry() }
         )
-
         FilterOptionRow(
             label = stringResource(R.string.region),
             value = (uiState as AreaUiState.Content).region ?: "",
@@ -161,7 +167,7 @@ fun FilterOptionRow(
             .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (value.isEmpty()) {
+        if (value.isBlank()) {
             Text(
                 text = label,
                 modifier = Modifier.weight(1f),
