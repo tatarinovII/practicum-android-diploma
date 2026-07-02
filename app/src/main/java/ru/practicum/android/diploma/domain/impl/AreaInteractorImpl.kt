@@ -8,7 +8,7 @@ class AreaInteractorImpl(
     private val repository: AreaRepository
 ) : AreaInteractor {
 
-    override suspend fun getCountries(): Result<List<FilterArea>> {
-        return repository.getCountries()
+    override suspend fun getAreas(): Result<List<FilterArea>> {
+        return repository.getAreas()
     }
 }

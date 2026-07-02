@@ -12,7 +12,7 @@ import ru.practicum.android.diploma.domain.repository.AreaRepository
 class AreaRepositoryImpl(
     private val networkClient: NetworkClient
 ) : AreaRepository {
-    override suspend fun getCountries(): Result<List<FilterArea>> {
+    override suspend fun getAreas(): Result<List<FilterArea>> {
         val response = networkClient.requestFilterArea()
         return when (response.resultCode) {
             SUCCESS -> {
@@ -38,13 +38,5 @@ class AreaRepositoryImpl(
                 Result.failure(Exception("Неизвестная ошибка (код ${response.resultCode})"))
             }
         }
-    }
-
-    override fun setCountry(country: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun clearCountry() {
-        TODO("Not yet implemented")
     }
 }
