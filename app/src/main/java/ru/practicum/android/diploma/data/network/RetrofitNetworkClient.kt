@@ -11,6 +11,7 @@ import ru.practicum.android.diploma.data.network.ResponseCode.NOT_FOUND
 import ru.practicum.android.diploma.data.network.ResponseCode.NO_CONNECTION
 import ru.practicum.android.diploma.data.network.ResponseCode.SERVER_ERROR
 import ru.practicum.android.diploma.data.network.ResponseCode.SUCCESS
+import ru.practicum.android.diploma.data.network.api.AreaResponse
 import ru.practicum.android.diploma.data.network.api.VacancyApi
 
 class RetrofitNetworkClient(
@@ -20,20 +21,23 @@ class RetrofitNetworkClient(
     private val token: String =
         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcmFjdGljdW0ucnUiLCJhdWQiOiJwcmFjdGljdW0ucnUiLCJ1c2VybmFtZSI6ItGG0YPRhtC60YPRg9C6In0.jaxpKiIDe0nZZxzLSTVRKibViTN0OAZIUueaVw4LyL8"
 
-    override suspend fun requestFilterArea(): Response {
+    override suspend fun requestFilterArea(): AreaResponse {
         if (!isConnected()) {
-            return Response().apply { resultCode = NO_CONNECTION }
+            return AreaResponse(resultCode = NO_CONNECTION)
         }
         return withContext(Dispatchers.IO) {
             try {
                 val areas = vacancyApi.getArea(token)
                 if (areas.isEmpty()) {
-                    Response().apply { resultCode = BAD_REQUEST }
+                    AreaResponse(resultCode = BAD_REQUEST)
                 } else {
-                    Response().apply { resultCode = SUCCESS }
+                    AreaResponse(
+                        resultCode = SUCCESS,
+                        results = areas
+                    )
                 }
             } catch (e: Throwable) {
-                Response().apply { resultCode = SERVER_ERROR }
+                AreaResponse(resultCode = SERVER_ERROR)
             }
         }
     }

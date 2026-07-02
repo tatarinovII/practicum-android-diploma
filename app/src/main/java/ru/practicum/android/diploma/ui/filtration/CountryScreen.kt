@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.filtration
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,6 +41,7 @@ fun CountryScreen(
 ) {
 
     val countries = viewModel.countries.collectAsState()
+    Log.i("11111", "${countries.value.size}")
 
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -59,7 +61,7 @@ fun CountryScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = {},
+                        onClick = { navController.popBackStack() },
                         modifier = Modifier.padding(
                             vertical = 8.dp,
                             horizontal = 4.dp
@@ -75,7 +77,6 @@ fun CountryScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
 
             CountryContent(
                 countries = countries.value,

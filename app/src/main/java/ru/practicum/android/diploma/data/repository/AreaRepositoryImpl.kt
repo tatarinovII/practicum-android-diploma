@@ -3,7 +3,6 @@ package ru.practicum.android.diploma.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.practicum.android.diploma.data.NetworkClient
-import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
 import ru.practicum.android.diploma.data.mappers.toDomain
 import ru.practicum.android.diploma.data.network.ResponseCode.BAD_REQUEST
 import ru.practicum.android.diploma.data.network.ResponseCode.NO_CONNECTION
@@ -19,14 +18,15 @@ class AreaRepositoryImpl(
         val response = networkClient.requestFilterArea()
         when (response.resultCode) {
             SUCCESS -> {
-                val filterAreasDto = response as? List<FilterAreaDto>
-                if (filterAreasDto?.isNotEmpty() == true) {
-                    val filterAreas = filterAreasDto.map { it.toDomain() }
-                    val countries = filterAreas.filter { it.parentId == null }
-                    emit(countries)
-                } else {
-                    Result.failure<FilterArea>(Exception("Не удалось получить список стран"))
-                }
+                val filterAreaDto = response.results
+                val filterAreas = filterAreaDto.map { it.toDomain() }
+
+                // Элемент "Другие регионы" перемещаю в конец
+                val mutableFilterAreas = filterAreas.toMutableList()
+                val anotherRegionElement = mutableFilterAreas.removeAt(6)
+                mutableFilterAreas.add(anotherRegionElement)
+
+                emit(mutableFilterAreas)
             }
             BAD_REQUEST -> {
                 Result.failure<FilterArea>(Exception("Не удалось получить список стран"))

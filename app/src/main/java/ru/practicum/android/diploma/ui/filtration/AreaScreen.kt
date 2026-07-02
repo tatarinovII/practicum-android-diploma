@@ -1,6 +1,9 @@
 package ru.practicum.android.diploma.ui.filtration
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +34,7 @@ import ru.practicum.android.diploma.presentation.filter.AreaViewModel
 import ru.practicum.android.diploma.ui.navigation.Route
 import ru.practicum.android.diploma.ui.theme.Grey
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
+import ru.practicum.android.diploma.ui.vacancy.ShowLoading
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +63,7 @@ fun AreaScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = {},
+                        onClick = { navController.popBackStack() },
                         modifier = Modifier.padding(
                             vertical = 8.dp,
                             horizontal = 4.dp
@@ -74,22 +78,71 @@ fun AreaScreen(
                 }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            FilterOptionRow(
-                label = stringResource(R.string.country),
-                value = (uiState as AreaUiState.Content).country ?: "",
-                onClick = { navController.navigate(Route.COUNTRY.name) },
-                onClear = { viewModel.clearCountry() }
-            )
-
-            FilterOptionRow(
-                label = stringResource(R.string.region),
-                value = (uiState as AreaUiState.Content).region ?: "",
-                onClick = { navController.navigate(Route.REGION.name) },
-                onClear = { viewModel.clearRegion() }
-            )
+            Box(modifier = Modifier.fillMaxSize()) {
+                when(uiState) {
+                    is AreaUiState.Content -> {
+                        ShowCountries(
+                            uiState = uiState,
+                            navController = navController,
+                            viewModel = viewModel
+                        )
+                    }
+                    is AreaUiState.Error -> {
+                        ShowPlaceholder()
+                    }
+                    AreaUiState.Loading -> {
+                        ShowLoading()
+                    }
+                }
+            }
         }
+    }
+}
+
+@Composable
+fun ShowCountries(
+    uiState: AreaUiState,
+    navController: NavController,
+    viewModel: AreaViewModel
+) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 16.dp)) {
+        //Spacer(modifier = Modifier.height(16.dp))
+        FilterOptionRow(
+            label = stringResource(R.string.country),
+            value = (uiState as AreaUiState.Content).country ?: "",
+            onClick = { navController.navigate(Route.COUNTRY.name) },
+            onClear = { viewModel.clearCountry() }
+        )
+
+        FilterOptionRow(
+            label = stringResource(R.string.region),
+            value = (uiState as AreaUiState.Content).region ?: "",
+            onClick = { navController.navigate(Route.REGION.name) },
+            onClear = { viewModel.clearRegion() }
+        )
+    }
+}
+
+@Composable
+fun ShowPlaceholder() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            alignment = Alignment.Center,
+            painter = painterResource(id = R.drawable.placeholder_error_to_get_list),
+            contentDescription = stringResource(R.string.error_to_get_list)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.error_to_get_list),
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleLarge
+        )
     }
 }
 
