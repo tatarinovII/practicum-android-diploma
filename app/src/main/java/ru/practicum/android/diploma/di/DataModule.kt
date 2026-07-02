@@ -36,6 +36,12 @@ val dataModule = module {
         ).build()
     }
 
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "trackAddedToAnyPlaylistDatabase")
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
     single<VacancyDao> { get<AppDatabase>().vacancyDao() }
 
     factory { Converters() }

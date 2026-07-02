@@ -46,7 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.filter.FilterViewModel
 import ru.practicum.android.diploma.ui.navigation.Route
@@ -60,7 +60,7 @@ import ru.practicum.android.diploma.ui.theme.Red
 @Composable
 fun FiltrationScreen(
     navController: NavController,
-    viewModel: FilterViewModel = koinInject()
+    viewModel: FilterViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
@@ -111,7 +111,7 @@ fun FiltrationScreen(
                 label = stringResource(R.string.place_of_work),
                 value = uiState.areaName ?: "",
                 onClick = {
-                    navController.navigate(Route.FILTER_AREA.name)
+                    navController.navigate(Route.AREA.name)
                 }
             )
 
@@ -119,7 +119,7 @@ fun FiltrationScreen(
             FilterOptionRow(
                 label = stringResource(R.string.industry),
                 value = uiState.industryName ?: "",
-                onClick = { navController.navigate(Route.FILTER_INDUSTRY.name) },
+                onClick = { navController.navigate(Route.INDUSTRY.name) },
                 onClear = { viewModel.clearIndustry() }
             )
 
