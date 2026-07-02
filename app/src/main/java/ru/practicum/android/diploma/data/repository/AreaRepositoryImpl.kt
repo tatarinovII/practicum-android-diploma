@@ -1,9 +1,6 @@
 package ru.practicum.android.diploma.data.repository
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import ru.practicum.android.diploma.data.NetworkClient
-import ru.practicum.android.diploma.data.dto.filterarea.FilterAreaDto
 import ru.practicum.android.diploma.data.mappers.toDomain
 import ru.practicum.android.diploma.data.network.ResponseCode.BAD_REQUEST
 import ru.practicum.android.diploma.data.network.ResponseCode.NO_CONNECTION
@@ -15,28 +12,39 @@ import ru.practicum.android.diploma.domain.repository.AreaRepository
 class AreaRepositoryImpl(
     private val networkClient: NetworkClient
 ) : AreaRepository {
-    override suspend fun getCountries(): Flow<List<FilterArea>> = flow {
+    override suspend fun getCountries(): Result<List<FilterArea>> {
         val response = networkClient.requestFilterArea()
-        when (response.resultCode) {
+        return when (response.resultCode) {
             SUCCESS -> {
-                val filterAreasDto = response as? List<FilterAreaDto>
+                val filterAreasDto = response.data
                 if (filterAreasDto?.isNotEmpty() == true) {
                     val filterAreas = filterAreasDto.map { it.toDomain() }
                     val countries = filterAreas.filter { it.parentId == null }
-                    emit(countries)
+                    Result.success(countries)
                 } else {
-                    Result.failure<FilterArea>(Exception("Не удалось получить список стран"))
+                    Result.failure(Exception("Не удалось получить список стран"))
                 }
             }
             BAD_REQUEST -> {
-                Result.failure<FilterArea>(Exception("Не удалось получить список стран"))
+                Result.failure(Exception("Не удалось получить список стран"))
             }
             SERVER_ERROR -> {
-                Result.failure<FilterArea>(Exception("Ошибка сервера"))
+                Result.failure(Exception("Ошибка сервера"))
             }
             NO_CONNECTION -> {
-                Result.failure<FilterArea>(Exception("Отсутствует подключение к интернету"))
+                Result.failure(Exception("Отсутствует подключение к интернету"))
+            }
+            else -> {
+                Result.failure(Exception("Неизвестная ошибка (код ${response.resultCode})"))
             }
         }
+    }
+
+    override fun setCountry(country: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun clearCountry() {
+        TODO("Not yet implemented")
     }
 }
