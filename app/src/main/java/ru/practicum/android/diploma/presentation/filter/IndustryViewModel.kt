@@ -8,11 +8,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.interactor.FilterDataInteractor
-import ru.practicum.android.diploma.domain.interactor.FilterSettingsInteractor
 
 class IndustryViewModel(
     private val filterDataInteractor: FilterDataInteractor,
-    private val filterSettingsInteractor: FilterSettingsInteractor
+    private val filterViewModel: FilterViewModel
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(IndustryUiState())
@@ -20,6 +19,8 @@ class IndustryViewModel(
 
     init {
         loadIndustries()
+        val currentId = filterViewModel.uiState.value.industryId
+        _uiState.update { it.copy(selectedIndustryId = currentId) }
     }
 
     private fun loadIndustries() {
@@ -75,15 +76,8 @@ class IndustryViewModel(
         val selectedId = _uiState.value.selectedIndustryId
         if (selectedId != null) {
             val selectedIndustry = _uiState.value.industries.find { it.id == selectedId }
-            if (selectedIndustry != null) {
-                viewModelScope.launch {
-                    val currentSettings = filterSettingsInteractor.getFilterSettings()
-                    val newSettings = currentSettings.copy(
-                        industryId = selectedIndustry.id,
-                        industryName = selectedIndustry.name
-                    )
-                    filterSettingsInteractor.saveFilterSettings(newSettings)
-                }
+            selectedIndustry?.let {
+                filterViewModel.updateIndustry(it.id, it.name)
             }
         }
     }
