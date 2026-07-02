@@ -111,7 +111,7 @@ fun FiltrationScreen(
                 label = stringResource(R.string.place_of_work),
                 value = uiState.areaName ?: "",
                 onClick = {
-                    navController.navigate(Route.FILTER_AREA.name)
+                    navController.navigate(Route.AREA.name)
                 }
             )
 
@@ -120,7 +120,7 @@ fun FiltrationScreen(
                 label = stringResource(R.string.industry),
                 value = uiState.industryName ?: "",
                 onClick = {
-                    navController.navigate(Route.FILTER_INDUSTRY.name)
+                    navController.navigate(Route.INDUSTRY.name)
                 }
             )
 
