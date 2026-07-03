@@ -150,7 +150,7 @@ fun FiltrationScreen(
                     Button(
                         onClick = {
                             viewModel.applyFilter()
-                            navController.popBackStack()
+                            navController.navigate(Route.MAIN.name)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -165,10 +165,7 @@ fun FiltrationScreen(
                         )
                     }
                     Button(
-                        onClick = {
-                            viewModel.resetFilter()
-                            navController.popBackStack()
-                        },
+                        onClick = { viewModel.resetFilter() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(59.dp),

@@ -1,11 +1,10 @@
 package ru.practicum.android.diploma.ui.filtration
 
-import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,19 +29,19 @@ import androidx.navigation.NavController
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.FilterArea
-import ru.practicum.android.diploma.presentation.filter.AreaViewModel
+import ru.practicum.android.diploma.presentation.filter.CountryUiState
+import ru.practicum.android.diploma.presentation.filter.CountryViewModel
 import ru.practicum.android.diploma.ui.navigation.Route
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
+import ru.practicum.android.diploma.ui.vacancy.ShowLoading
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryScreen(
     navController: NavController,
-    viewModel: AreaViewModel = koinViewModel()
+    viewModel: CountryViewModel = koinViewModel()
 ) {
-
-    val countries = viewModel.countries.collectAsState()
-
+    val uiCountryState by viewModel.uiCountryState.collectAsState()
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
@@ -74,21 +74,44 @@ fun CountryScreen(
                     }
                 }
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            CountryContent(
-                countries = countries.value,
-                onCountryClick = {
-                    viewModel.setCountryFromArea(it)
-                    //navController.navigate(Route.AREA.name)
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("selected_country", it.name)
-                    navController.navigate(Route.AREA.name)
-                })
+            Box(modifier = Modifier.fillMaxSize()) {
+                when(uiCountryState) {
+                    is CountryUiState.Content -> {
+                        ShowCountryContent(
+                            countries = (uiCountryState as CountryUiState.Content).countries as List<FilterArea>,
+                            navController = navController,
+                            viewModel = viewModel
+                        )
+                    }
+                    is CountryUiState.Error -> {
+                        ShowAreaPlaceholder()
+                    }
+                    CountryUiState.Loading -> {
+                        ShowLoading()
+                    }
+                }
+            }
         }
     }
 }
-
+@Composable
+fun ShowCountryContent(
+    countries: List<FilterArea>,
+    navController: NavController,
+    viewModel: CountryViewModel
+) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 16.dp)
+    ) {
+        CountryContent(
+            countries = countries,
+            onCountryClick = {
+                viewModel.onCountrySelected(it)
+                navController.navigate(Route.AREA.name)
+            })
+    }
+}
 @Composable
 fun CountryContent(
     countries: List<FilterArea>,
@@ -105,7 +128,6 @@ fun CountryContent(
         }
     }
 }
-
 @Composable
 fun CountryItem(
     country: String,

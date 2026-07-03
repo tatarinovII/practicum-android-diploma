@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.ui.filtration
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,12 +42,7 @@ fun AreaScreen(
     navController: NavController,
     viewModel: AreaViewModel = koinViewModel()
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
-    val country = navController.previousBackStackEntry
-        ?.savedStateHandle
-        ?.get<String>("selected_country")
-
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
@@ -67,7 +61,7 @@ fun AreaScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() },
+                        onClick = { navController.navigate(Route.FILTER.name) },
                         modifier = Modifier.padding(
                             vertical = 8.dp,
                             horizontal = 4.dp
@@ -81,20 +75,17 @@ fun AreaScreen(
                     }
                 }
             )
-
             Box(modifier = Modifier.fillMaxSize()) {
                 when(uiState) {
                     is AreaUiState.Content -> {
-                        Log.i("uistatttttte", "$uiState")
                         ShowArea(
-                            country = country.toString(),
                             uiState = uiState,
                             navController = navController,
                             viewModel = viewModel
                         )
                     }
                     is AreaUiState.Error -> {
-                        ShowPlaceholder()
+                        ShowAreaPlaceholder()
                     }
                     AreaUiState.Loading -> {
                         ShowLoading()
@@ -104,21 +95,19 @@ fun AreaScreen(
         }
     }
 }
-
 @Composable
 fun ShowArea(
-    country: String,
     uiState: AreaUiState,
     navController: NavController,
     viewModel: AreaViewModel
 ) {
     Column(modifier = Modifier
         .fillMaxSize()
-        .padding(top = 16.dp)) {
+        .padding(top = 16.dp)
+    ) {
         FilterOptionRow(
             label = stringResource(R.string.country),
-            //value = (uiState as AreaUiState.Content).country ?: "",
-            value = country,
+            value = (uiState as AreaUiState.Content).country ?: "",
             onClick = { navController.navigate(Route.COUNTRY.name) },
             onClear = { viewModel.clearCountry() }
         )
@@ -130,9 +119,8 @@ fun ShowArea(
         )
     }
 }
-
 @Composable
-fun ShowPlaceholder() {
+fun ShowAreaPlaceholder() {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -151,7 +139,6 @@ fun ShowPlaceholder() {
         )
     }
 }
-
 @Composable
 fun FilterOptionRow(
     label: String,
