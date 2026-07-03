@@ -2,8 +2,8 @@ package ru.practicum.android.diploma.presentation.filter
 
 sealed interface AreaUiState {
     data class Content(
-        val country: String? = null,
-        val region: String? = null,
+        var country: String? = null,
+        var region: String? = null,
     ) : AreaUiState
 
     object Loading : AreaUiState

@@ -59,6 +59,9 @@ fun AppNavHost() {
             composable(Route.COUNTRY.name) {
                 CountryScreen(navController)
             }
+            composable(Route.INDUSTRY.name) {
+                IndustryScreen(navController)
+            }
         }
     }
 }

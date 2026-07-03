@@ -7,6 +7,7 @@ import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
 import ru.practicum.android.diploma.data.network.Response
 import ru.practicum.android.diploma.data.network.VacancyDetailRequest
 import ru.practicum.android.diploma.data.network.VacancyRequest
+import ru.practicum.android.diploma.data.network.api.AreaResponse
 
 interface NetworkClient {
     suspend fun requestFilterArea(): Response<List<FilterAreaDto>>

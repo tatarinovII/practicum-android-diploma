@@ -15,6 +15,7 @@ import ru.practicum.android.diploma.data.network.ResponseCode.NOT_FOUND
 import ru.practicum.android.diploma.data.network.ResponseCode.NO_CONNECTION
 import ru.practicum.android.diploma.data.network.ResponseCode.SERVER_ERROR
 import ru.practicum.android.diploma.data.network.ResponseCode.SUCCESS
+import ru.practicum.android.diploma.data.network.api.AreaResponse
 import ru.practicum.android.diploma.data.network.api.VacancyApi
 
 class RetrofitNetworkClient(
