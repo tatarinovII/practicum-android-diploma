@@ -46,4 +46,6 @@
     <string name="apply">Применить</string>
     <string name="reset">Сбросить</string>
     <string name="clear">Очистить</string>
+    <string name="select">Выбрать</string>
+    <string name="enter_industry">Введите отрасль</string>
 </resources>

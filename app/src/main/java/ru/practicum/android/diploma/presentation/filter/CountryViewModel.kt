@@ -24,12 +24,12 @@ class CountryViewModel(
     fun loadListOfCountries() {
         viewModelScope.launch {
             _uiCountryState.value = CountryUiState.Loading
-            try {
-                areaInteractor.getAreas().collect { list ->
-                    _uiCountryState.value = CountryUiState.Content(countries = list)
-                }
-            } catch (e: Exception) {
-                _uiCountryState.value = CountryUiState.Error("Ошибка при получении списка")
+            areaInteractor.getAreas().collect { result ->
+                result.fold(
+                    onSuccess = { list -> _uiCountryState.value = CountryUiState.Content(countries = list) },
+                    onFailure = { error -> CountryUiState.Error(error.message) }
+                )
+
             }
         }
     }
