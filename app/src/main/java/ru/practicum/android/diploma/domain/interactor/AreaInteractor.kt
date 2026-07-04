@@ -4,5 +4,5 @@ import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.models.FilterArea
 
 interface AreaInteractor {
-    suspend fun getAreas(): Flow<List<FilterArea>>
+    suspend fun getAreas(): Flow<Result<List<FilterArea>>>
 }
