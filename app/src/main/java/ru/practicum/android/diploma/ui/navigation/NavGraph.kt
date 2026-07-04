@@ -16,6 +16,7 @@ import ru.practicum.android.diploma.ui.filtration.AreaScreen
 import ru.practicum.android.diploma.ui.filtration.CountryScreen
 import ru.practicum.android.diploma.ui.filtration.FiltrationScreen
 import ru.practicum.android.diploma.ui.filtration.IndustryScreen
+import ru.practicum.android.diploma.ui.filtration.RegionScreen
 import ru.practicum.android.diploma.ui.main.MainScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
 import ru.practicum.android.diploma.ui.vacancy.VacancyScreen

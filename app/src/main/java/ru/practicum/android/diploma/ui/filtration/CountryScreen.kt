@@ -59,7 +59,6 @@ fun CountryScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() },
