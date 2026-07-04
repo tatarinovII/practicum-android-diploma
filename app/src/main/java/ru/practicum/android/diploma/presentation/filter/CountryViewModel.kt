@@ -13,7 +13,6 @@ class CountryViewModel(
     private val areaInteractor: AreaInteractor,
     private val filterSettingsInteractor: FilterSettingsInteractor
 ) : ViewModel() {
-
     private var _uiCountryState = MutableStateFlow<CountryUiState>(CountryUiState.Content())
     val uiCountryState: StateFlow<CountryUiState> = _uiCountryState
 

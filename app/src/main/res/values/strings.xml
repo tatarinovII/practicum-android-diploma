@@ -16,6 +16,7 @@
     <string name="choice_work_place">Выбор места работы</string>
     <string name="country">Страна</string>
     <string name="choice_country">Выбор страны</string>
+    <string name="choice_region">Выбор региона</string>
     <string name="region">Регион</string>
     <string name="responsibilities">Обязанности</string>
     <string name="servers_error_vacancy">Ошибка сервера</string>
@@ -24,6 +25,7 @@
     <string name="back">Назад</string>
     <string name="search">Поиск</string>
     <string name="search_hint">Введите запрос</string>
+    <string name="search_region_hint">Введите регион</string>
     <string name="search_placeholder_hint">Здесь будут вакансии</string>
     <string name="search_empty_result">Ничего не найдено</string>
     <string name="clear_query">Очистить</string>

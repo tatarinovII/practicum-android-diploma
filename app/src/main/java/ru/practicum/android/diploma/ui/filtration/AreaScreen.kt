@@ -43,6 +43,7 @@ fun AreaScreen(
     viewModel: AreaViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    viewModel.loadAreas()
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(

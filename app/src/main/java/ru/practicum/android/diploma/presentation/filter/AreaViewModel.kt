@@ -6,11 +6,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ru.practicum.android.diploma.domain.interactor.AreaInteractor
 import ru.practicum.android.diploma.domain.interactor.FilterSettingsInteractor
-import ru.practicum.android.diploma.domain.models.FilterArea
 
-//TODO сделать viewModel полностью
 class AreaViewModel(
     private val filterSettingsInteractor: FilterSettingsInteractor
 ) : ViewModel() {
@@ -39,16 +36,33 @@ class AreaViewModel(
         }
     }
     fun clearCountry() {
-        val currentState = _uiState.value
-        if (currentState is AreaUiState.Content) {
-            _uiState.value = currentState.copy(country = "")
+        viewModelScope.launch {
+            val currentSettings = filterSettingsInteractor.getFilterSettings()
+            val newSettings = currentSettings.copy(
+                areaId = null,
+                areaName = null
+            )
+            filterSettingsInteractor.saveFilterSettings(newSettings)
+            val currentState = _uiState.value
+            if (currentState is AreaUiState.Content) {
+                _uiState.value = currentState.copy(country = "")
+            }
         }
     }
 
     fun clearRegion() {
-        val currentState = _uiState.value
-        if (currentState is AreaUiState.Content) {
-            _uiState.value = currentState.copy(region = "")
+        viewModelScope.launch {
+            val areaNames = filterSettingsInteractor.getFilterSettings().areaName?.split(", ")
+            val currentSettings = filterSettingsInteractor.getFilterSettings()
+            val newSettings = currentSettings.copy(
+                areaId = null,
+                areaName = areaNames?.get(0)
+            )
+            filterSettingsInteractor.saveFilterSettings(newSettings)
+            val currentState = _uiState.value
+            if (currentState is AreaUiState.Content) {
+                _uiState.value = currentState.copy(region = "")
+            }
         }
     }
 }
