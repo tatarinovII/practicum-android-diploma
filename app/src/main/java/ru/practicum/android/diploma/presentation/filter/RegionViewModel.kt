@@ -54,29 +54,11 @@ class RegionViewModel(
     fun onRegionSelected(region: FilterArea) {
         viewModelScope.launch {
             val currentSettings = filterSettingsInteractor.getFilterSettings()
-            var countryId = currentSettings.countryId
-            var countryName = currentSettings.countryName
 
-            if (countryId == null || countryName == null) {
-                val countries = countriesCache
-                if (countries != null) {
-                    val country = countries.find { it.id == region.parentId }
-                    if (country != null) {
-                        countryId = country.id
-                        countryName = country.name
-                    }
-                } else {
-                    val result = areaInteractor.getAreas().firstOrNull()
-                    if (result?.isSuccess == true) {
-                        val loadedCountries = result.getOrNull() ?: emptyList()
-                        countriesCache = loadedCountries
-                        val country = loadedCountries.find { it.id == region.parentId }
-                        if (country != null) {
-                            countryId = country.id
-                            countryName = country.name
-                        }
-                    }
-                }
+            val (countryId, countryName) = if (currentSettings.countryId == null || currentSettings.countryName == null) {
+                findCountryForRegion(region)
+            } else {
+                currentSettings.countryId to currentSettings.countryName
             }
 
             val newSettings = currentSettings.copy(
@@ -87,6 +69,24 @@ class RegionViewModel(
             )
             filterSettingsInteractor.saveFilterSettings(newSettings)
         }
+    }
+
+    private suspend fun findCountryForRegion(region: FilterArea): Pair<String?, String?> {
+        val cachedCountries = countriesCache
+        if (cachedCountries != null) {
+            val country = cachedCountries.find { it.id == region.parentId }
+            return country?.id to country?.name
+        }
+
+        val result = areaInteractor.getAreas().firstOrNull()
+        if (result?.isSuccess == true) {
+            val loadedCountries = result.getOrNull() ?: emptyList()
+            countriesCache = loadedCountries
+            val country = loadedCountries.find { it.id == region.parentId }
+            return country?.id to country?.name
+        }
+
+        return null to null
     }
 
     fun sortedAndUpMoscow(regions: List<FilterArea>): List<FilterArea> {

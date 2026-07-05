@@ -121,7 +121,7 @@ fun ShowRegionContent(
 
     Column(
         modifier = Modifier
-        .fillMaxSize()
+            .fillMaxSize()
     ) {
         SearchInput(
             query = searchQuery,
