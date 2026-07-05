@@ -12,26 +12,36 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.filter.AreaUiState
 import ru.practicum.android.diploma.presentation.filter.AreaViewModel
 import ru.practicum.android.diploma.ui.navigation.Route
+import ru.practicum.android.diploma.ui.theme.Blue
 import ru.practicum.android.diploma.ui.theme.Grey
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
 import ru.practicum.android.diploma.ui.vacancy.ShowLoading
@@ -43,7 +53,20 @@ fun AreaScreen(
     viewModel: AreaViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    viewModel.loadAreas()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadAreas()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
@@ -62,7 +85,7 @@ fun AreaScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.navigate(Route.FILTER.name) },
+                        onClick = { navController.popBackStack() },
                         modifier = Modifier.padding(
                             vertical = 8.dp,
                             horizontal = 4.dp
@@ -74,7 +97,11 @@ fun AreaScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+                modifier = Modifier.height(64.dp)
             )
             Box(modifier = Modifier.fillMaxSize()) {
                 when(uiState) {
@@ -102,22 +129,43 @@ fun ShowArea(
     navController: NavController,
     viewModel: AreaViewModel
 ) {
+    val content = uiState as AreaUiState.Content
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(top = 16.dp)
     ) {
-        FilterOptionRow(
-            label = stringResource(R.string.country),
-            value = (uiState as AreaUiState.Content).country ?: "",
-            onClick = { navController.navigate(Route.COUNTRY.name) },
-            onClear = { viewModel.clearCountry() }
-        )
-        FilterOptionRow(
-            label = stringResource(R.string.region),
-            value = (uiState as AreaUiState.Content).region ?: "",
-            onClick = { navController.navigate(Route.REGION.name) },
-            onClear = { viewModel.clearRegion() }
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            FilterOptionRow(
+                label = stringResource(R.string.country),
+                value = content.country ?: "",
+                onClick = { navController.navigate(Route.COUNTRY.name) },
+                onClear = { viewModel.clearCountry() }
+            )
+            FilterOptionRow(
+                label = stringResource(R.string.region),
+                value = content.region ?: "",
+                onClick = { navController.navigate(Route.REGION.name) },
+                onClear = { viewModel.clearRegion() }
+            )
+        }
+
+        if (content.country?.isNotBlank() == true || content.region?.isNotBlank() == true) {
+            Button(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
+                    .height(59.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Blue)
+            ) {
+                Text(
+                    text = stringResource(R.string.select),
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
     }
 }
 @Composable
@@ -141,7 +189,7 @@ fun ShowAreaPlaceholder() {
     }
 }
 @Composable
-fun FilterOptionRow(
+private fun FilterOptionRow(
     label: String,
     value: String,
     onClick: () -> Unit,

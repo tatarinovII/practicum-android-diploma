@@ -32,7 +32,6 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.presentation.filter.CountryUiState
 import ru.practicum.android.diploma.presentation.filter.CountryViewModel
-import ru.practicum.android.diploma.ui.navigation.Route
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
 import ru.practicum.android.diploma.ui.vacancy.ShowLoading
 
@@ -73,7 +72,11 @@ fun CountryScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+                modifier = Modifier.height(64.dp)
             )
             Box(modifier = Modifier.fillMaxSize()) {
                 when(uiCountryState) {
@@ -109,7 +112,7 @@ fun ShowCountryContent(
             countries = countries,
             onCountryClick = {
                 viewModel.onCountrySelected(it)
-                navController.navigate(Route.AREA.name)
+                navController.popBackStack()
             })
     }
 }

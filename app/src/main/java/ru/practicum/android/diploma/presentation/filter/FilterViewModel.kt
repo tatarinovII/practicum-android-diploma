@@ -23,7 +23,7 @@ class FilterViewModel(
         loadSettings()
     }
 
-    private fun loadSettings() {
+    fun loadSettings() {
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
             _uiState.update {
@@ -39,22 +39,9 @@ class FilterViewModel(
         }
     }
 
-    fun updateArea(areaId: String, areaName: String) {
+    fun clearArea() {
         _uiState.update {
-            it.copy(
-                areaId = if (areaName.isEmpty()) null else areaId,
-                areaName = if (areaName.isEmpty()) null else areaName
-            )
-        }
-        saveSettings()
-    }
-
-    fun updateIndustry(industryId: Int, industryName: String) {
-        _uiState.update {
-            it.copy(
-                industryId = if (industryName.isEmpty()) null else industryId,
-                industryName = if (industryName.isEmpty()) null else industryName
-            )
+            it.copy(areaId = null, areaName = null)
         }
         saveSettings()
     }

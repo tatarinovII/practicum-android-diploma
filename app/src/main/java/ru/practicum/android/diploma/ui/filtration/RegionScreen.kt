@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,9 +19,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,7 +36,8 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.presentation.filter.RegionUiState
 import ru.practicum.android.diploma.presentation.filter.RegionViewModel
-import ru.practicum.android.diploma.ui.navigation.Route
+import ru.practicum.android.diploma.ui.components.Placeholder
+import ru.practicum.android.diploma.ui.components.SearchInput
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
 import ru.practicum.android.diploma.ui.vacancy.ShowLoading
 
@@ -73,10 +79,14 @@ fun RegionScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+                modifier = Modifier.height(64.dp)
             )
             Box(modifier = Modifier.fillMaxSize()) {
-                when(uiRegionState) {
+                when (uiRegionState) {
                     is RegionUiState.Content -> {
                         ShowRegionContent(
                             regions = (uiRegionState as RegionUiState.Content).regions as List<FilterArea>,
@@ -95,24 +105,50 @@ fun RegionScreen(
         }
     }
 }
+
 @Composable
 fun ShowRegionContent(
     regions: List<FilterArea>,
     navController: NavController,
     viewModel: RegionViewModel
 ) {
-    Column(modifier = Modifier
+    var searchQuery by remember { mutableStateOf("") }
+    val filteredRegions = if (searchQuery.isBlank()) {
+        regions
+    } else {
+        regions.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
+
+    Column(
+        modifier = Modifier
         .fillMaxSize()
-        .padding(top = 16.dp)
     ) {
-        RegionContent(
-            regions = regions,
-            onRegionClick = {
-                viewModel.onRegionSelected(it)
-                navController.navigate(Route.AREA.name)
-            })
+        SearchInput(
+            query = searchQuery,
+            onQueryChange = { searchQuery = it },
+            onClear = { searchQuery = "" },
+            placeholder = stringResource(R.string.search_region_hint)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        if (filteredRegions.isEmpty() && searchQuery.isNotBlank()) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Placeholder(
+                    iconRes = R.drawable.placeholder_not_found,
+                    message = stringResource(R.string.region_not_found)
+                )
+            }
+        } else {
+            RegionContent(
+                regions = filteredRegions,
+                onRegionClick = {
+                    viewModel.onRegionSelected(it)
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }
+
 @Composable
 fun RegionContent(
     regions: List<FilterArea>,
