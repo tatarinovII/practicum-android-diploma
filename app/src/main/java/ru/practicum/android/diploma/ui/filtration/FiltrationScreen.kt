@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.filter.FilterViewModel
@@ -65,6 +67,10 @@ fun FiltrationScreen(
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    LaunchedEffect(navBackStackEntry) {
+        viewModel.loadSettings()
+    }
 
     MyAppTheme {
         Column(
@@ -106,16 +112,27 @@ fun FiltrationScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Поле "Место работы"
+            val locationText = buildString {
+                if (!uiState.countryName.isNullOrEmpty()) {
+                    append(uiState.countryName)
+                    if (!uiState.regionName.isNullOrEmpty()) {
+                        append(", ")
+                        append(uiState.regionName)
+                    }
+                } else {
+                    append(uiState.regionName ?: "")
+                }
+            }
+
             FilterOptionRow(
                 label = stringResource(R.string.place_of_work),
-                value = uiState.areaName ?: "",
+                value = locationText,
                 onClick = {
                     navController.navigate(Route.AREA.name)
-                }
+                },
+                onClear = { viewModel.clearArea() }
             )
 
-            // Поле "Отрасль"
             FilterOptionRow(
                 label = stringResource(R.string.industry),
                 value = uiState.industryName ?: "",
@@ -149,7 +166,7 @@ fun FiltrationScreen(
                     Button(
                         onClick = {
                             viewModel.applyFilter()
-                            navController.navigate(Route.MAIN.name)
+                            navController.popBackStack()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -164,7 +181,10 @@ fun FiltrationScreen(
                         )
                     }
                     Button(
-                        onClick = { viewModel.resetFilter() },
+                        onClick = {
+                            viewModel.resetFilter()
+                            navController.popBackStack()
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(59.dp),

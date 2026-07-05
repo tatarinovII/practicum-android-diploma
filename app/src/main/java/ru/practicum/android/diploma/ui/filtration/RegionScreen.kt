@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,18 +34,21 @@ import androidx.navigation.NavController
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.FilterArea
-import ru.practicum.android.diploma.presentation.filter.CountryUiState
-import ru.practicum.android.diploma.presentation.filter.CountryViewModel
+import ru.practicum.android.diploma.presentation.filter.RegionUiState
+import ru.practicum.android.diploma.presentation.filter.RegionViewModel
+import ru.practicum.android.diploma.ui.components.Placeholder
+import ru.practicum.android.diploma.ui.components.SearchInput
 import ru.practicum.android.diploma.ui.theme.MyAppTheme
 import ru.practicum.android.diploma.ui.vacancy.ShowLoading
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CountryScreen(
+fun RegionScreen(
     navController: NavController,
-    viewModel: CountryViewModel = koinViewModel()
+    viewModel: RegionViewModel = koinViewModel()
 ) {
-    val uiCountryState by viewModel.uiCountryState.collectAsState()
+    val uiRegionState by viewModel.uiRegionState.collectAsState()
+
     MyAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
@@ -53,7 +60,7 @@ fun CountryScreen(
                             start = 4.dp,
                             end = 8.dp
                         ),
-                        text = stringResource(R.string.choice_country),
+                        text = stringResource(R.string.choice_region),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleLarge
                     )
@@ -79,18 +86,18 @@ fun CountryScreen(
                 modifier = Modifier.height(64.dp)
             )
             Box(modifier = Modifier.fillMaxSize()) {
-                when(uiCountryState) {
-                    is CountryUiState.Content -> {
-                        ShowCountryContent(
-                            countries = (uiCountryState as CountryUiState.Content).countries as List<FilterArea>,
+                when (uiRegionState) {
+                    is RegionUiState.Content -> {
+                        ShowRegionContent(
+                            regions = (uiRegionState as RegionUiState.Content).regions as List<FilterArea>,
                             navController = navController,
                             viewModel = viewModel
                         )
                     }
-                    is CountryUiState.Error -> {
+                    is RegionUiState.Error -> {
                         ShowAreaPlaceholder()
                     }
-                    is CountryUiState.Loading -> {
+                    is RegionUiState.Loading -> {
                         ShowLoading()
                     }
                 }
@@ -98,54 +105,81 @@ fun CountryScreen(
         }
     }
 }
+
 @Composable
-fun ShowCountryContent(
-    countries: List<FilterArea>,
+fun ShowRegionContent(
+    regions: List<FilterArea>,
     navController: NavController,
-    viewModel: CountryViewModel
+    viewModel: RegionViewModel
 ) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(top = 16.dp)
-    ) {
-        CountryContent(
-            countries = countries,
-            onCountryClick = {
-                viewModel.onCountrySelected(it)
-                navController.popBackStack()
-            })
+    var searchQuery by remember { mutableStateOf("") }
+    val filteredRegions = if (searchQuery.isBlank()) {
+        regions
+    } else {
+        regions.filter { it.name.contains(searchQuery, ignoreCase = true) }
     }
-}
-@Composable
-fun CountryContent(
-    countries: List<FilterArea>,
-    onCountryClick: (FilterArea) -> Unit
-) {
-    LazyColumn(
-        contentPadding = PaddingValues(vertical = 16.dp)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        items(items = countries) { country ->
-            CountryItem(
-                country = country.name,
-                onCountryClick = { onCountryClick(country) }
+        SearchInput(
+            query = searchQuery,
+            onQueryChange = { searchQuery = it },
+            onClear = { searchQuery = "" },
+            placeholder = stringResource(R.string.search_region_hint)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        if (filteredRegions.isEmpty() && searchQuery.isNotBlank()) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Placeholder(
+                    iconRes = R.drawable.placeholder_not_found,
+                    message = stringResource(R.string.region_not_found)
+                )
+            }
+        } else {
+            RegionContent(
+                regions = filteredRegions,
+                onRegionClick = {
+                    viewModel.onRegionSelected(it)
+                    navController.popBackStack()
+                }
             )
         }
     }
 }
+
 @Composable
-fun CountryItem(
-    country: String,
-    onCountryClick: () -> Unit
+fun RegionContent(
+    regions: List<FilterArea>,
+    onRegionClick: (FilterArea) -> Unit
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(vertical = 16.dp)
+    ) {
+        items(items = regions) { region ->
+            RegionItem(
+                region = region.name,
+                onRegionClick = { onRegionClick(region) }
+            )
+        }
+    }
+}
+
+@Composable
+fun RegionItem(
+    region: String,
+    onRegionClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
             .padding(horizontal = 16.dp)
-            .clickable { onCountryClick() }
+            .clickable { onRegionClick() }
     ) {
         Text(
-            text = country,
+            text = region,
             modifier = Modifier.weight(1f),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.titleSmall
@@ -158,4 +192,3 @@ fun CountryItem(
         )
     }
 }
-

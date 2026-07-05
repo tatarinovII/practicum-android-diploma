@@ -68,7 +68,8 @@ class SearchViewModel(
     fun refreshFilterState() {
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
-            val active = settings.areaId != null ||
+            val active = settings.countryId != null ||
+                settings.regionId != null ||
                 settings.industryId != null ||
                 settings.salary != null ||
                 settings.onlyWithSalary
@@ -103,6 +104,7 @@ class SearchViewModel(
     private fun performSearch(query: String, resetPaging: Boolean) {
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
+            val areaParam = settings.regionId ?: settings.countryId
             if (resetPaging) {
                 _uiState.update {
                     it.copy(
@@ -117,7 +119,7 @@ class SearchViewModel(
             val result = searchInteractor.searchVacancies(
                 query = query,
                 page = if (resetPaging) 0 else _uiState.value.currentPage + 1,
-                areaId = settings.areaId,
+                areaId = areaParam,
                 industryId = settings.industryId,
                 salary = settings.salary,
                 onlyWithSalary = settings.onlyWithSalary

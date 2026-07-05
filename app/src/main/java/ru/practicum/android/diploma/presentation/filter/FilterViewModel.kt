@@ -23,13 +23,15 @@ class FilterViewModel(
         loadSettings()
     }
 
-    private fun loadSettings() {
+    fun loadSettings() {
         viewModelScope.launch {
             val settings = filterSettingsInteractor.getFilterSettings()
             _uiState.update {
                 it.copy(
-                    areaId = settings.areaId,
-                    areaName = settings.areaName,
+                    countryId = settings.countryId,
+                    countryName = settings.countryName,
+                    regionId = settings.regionId,
+                    regionName = settings.regionName,
                     industryId = settings.industryId,
                     industryName = settings.industryName,
                     salaryText = settings.salary?.toString() ?: "",
@@ -39,22 +41,9 @@ class FilterViewModel(
         }
     }
 
-    fun updateArea(areaId: String, areaName: String) {
+    fun clearArea() {
         _uiState.update {
-            it.copy(
-                areaId = if (areaName.isEmpty()) null else areaId,
-                areaName = if (areaName.isEmpty()) null else areaName
-            )
-        }
-        saveSettings()
-    }
-
-    fun updateIndustry(industryId: Int, industryName: String) {
-        _uiState.update {
-            it.copy(
-                industryId = if (industryName.isEmpty()) null else industryId,
-                industryName = if (industryName.isEmpty()) null else industryName
-            )
+            it.copy(countryId = null, countryName = null, regionId = null, regionName = null)
         }
         saveSettings()
     }
@@ -79,8 +68,10 @@ class FilterViewModel(
         viewModelScope.launch {
             val state = _uiState.value
             val settings = FilterSettings(
-                areaId = state.areaId,
-                areaName = state.areaName,
+                countryId = state.countryId,
+                countryName = state.countryName,
+                regionId = state.regionId,
+                regionName = state.regionName,
                 industryId = state.industryId,
                 industryName = state.industryName,
                 salary = state.salaryText.toIntOrNull(),
@@ -107,6 +98,7 @@ class FilterViewModel(
 
     fun isFilterActive(): Boolean {
         val state = _uiState.value
-        return state.areaId != null || state.industryId != null || state.salaryText.isNotEmpty() || state.onlyWithSalary
+        return state.countryId != null || state.regionId != null ||
+            state.industryId != null || state.salaryText.isNotEmpty() || state.onlyWithSalary
     }
 }

@@ -1,16 +1,12 @@
 package ru.practicum.android.diploma.presentation.filter
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ru.practicum.android.diploma.domain.interactor.AreaInteractor
 import ru.practicum.android.diploma.domain.interactor.FilterSettingsInteractor
-import ru.practicum.android.diploma.domain.models.FilterArea
 
-//TODO сделать viewModel полностью
 class AreaViewModel(
     private val filterSettingsInteractor: FilterSettingsInteractor
 ) : ViewModel() {
@@ -24,31 +20,40 @@ class AreaViewModel(
 
     fun loadAreas() {
         viewModelScope.launch {
-            val areaNames = filterSettingsInteractor.getFilterSettings().areaName?.split(", ")
-            if (areaNames?.size == 2) {
-                _uiState.value = AreaUiState.Content(
-                    country = areaNames[0],
-                    region = areaNames[1]
-                )
-            } else {
-                _uiState.value = AreaUiState.Content(
-                    country = areaNames?.get(0),
-                    region = null
-                )
-            }
+            val settings = filterSettingsInteractor.getFilterSettings()
+            _uiState.value = AreaUiState.Content(
+                country = settings.countryName,
+                region = settings.regionName
+            )
         }
     }
+
     fun clearCountry() {
-        val currentState = _uiState.value
-        if (currentState is AreaUiState.Content) {
-            _uiState.value = currentState.copy(country = "")
+        viewModelScope.launch {
+            val currentSettings = filterSettingsInteractor.getFilterSettings()
+            val newSettings = currentSettings.copy(
+                countryId = null,
+                countryName = null,
+                regionId = null,
+                regionName = null
+            )
+            filterSettingsInteractor.saveFilterSettings(newSettings)
+            _uiState.value = AreaUiState.Content(country = null, region = null)
         }
     }
 
     fun clearRegion() {
-        val currentState = _uiState.value
-        if (currentState is AreaUiState.Content) {
-            _uiState.value = currentState.copy(region = "")
+        viewModelScope.launch {
+            val currentSettings = filterSettingsInteractor.getFilterSettings()
+            val newSettings = currentSettings.copy(
+                regionId = null,
+                regionName = null
+            )
+            filterSettingsInteractor.saveFilterSettings(newSettings)
+            _uiState.value = AreaUiState.Content(
+                country = currentSettings.countryName,
+                region = null
+            )
         }
     }
 }

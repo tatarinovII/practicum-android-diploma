@@ -9,7 +9,7 @@ enum class Route {
     AREA,
     COUNTRY,
     REGION,
-    INDUSTRY,
+    INDUSTRY
 }
 
 

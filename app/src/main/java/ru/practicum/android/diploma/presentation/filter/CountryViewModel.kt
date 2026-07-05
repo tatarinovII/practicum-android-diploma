@@ -13,7 +13,6 @@ class CountryViewModel(
     private val areaInteractor: AreaInteractor,
     private val filterSettingsInteractor: FilterSettingsInteractor
 ) : ViewModel() {
-
     private var _uiCountryState = MutableStateFlow<CountryUiState>(CountryUiState.Content())
     val uiCountryState: StateFlow<CountryUiState> = _uiCountryState
 
@@ -36,12 +35,14 @@ class CountryViewModel(
 
     fun onCountrySelected(country: FilterArea) {
         viewModelScope.launch {
-            filterSettingsInteractor.saveFilterSettings(
-                filterSettingsInteractor.getFilterSettings().copy(
-                    areaId = country.id,
-                    areaName = country.name
-                )
+            val currentSettings = filterSettingsInteractor.getFilterSettings()
+            val newSettings = currentSettings.copy(
+                countryId = country.id,
+                countryName = country.name,
+                regionId = null,
+                regionName = null
             )
+            filterSettingsInteractor.saveFilterSettings(newSettings)
         }
     }
 
