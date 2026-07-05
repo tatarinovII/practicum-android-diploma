@@ -20,48 +20,40 @@ class AreaViewModel(
 
     fun loadAreas() {
         viewModelScope.launch {
-            val areaNames = filterSettingsInteractor.getFilterSettings().areaName?.split(", ")
-            if (areaNames?.size == 2) {
-                _uiState.value = AreaUiState.Content(
-                    country = areaNames[0],
-                    region = areaNames[1]
-                )
-            } else {
-                _uiState.value = AreaUiState.Content(
-                    country = areaNames?.get(0),
-                    region = null
-                )
-            }
+            val settings = filterSettingsInteractor.getFilterSettings()
+            _uiState.value = AreaUiState.Content(
+                country = settings.countryName,
+                region = settings.regionName
+            )
         }
     }
+
     fun clearCountry() {
         viewModelScope.launch {
             val currentSettings = filterSettingsInteractor.getFilterSettings()
             val newSettings = currentSettings.copy(
-                areaId = null,
-                areaName = null
+                countryId = null,
+                countryName = null,
+                regionId = null,
+                regionName = null
             )
             filterSettingsInteractor.saveFilterSettings(newSettings)
-            val currentState = _uiState.value
-            if (currentState is AreaUiState.Content) {
-                _uiState.value = currentState.copy(country = "")
-            }
+            _uiState.value = AreaUiState.Content(country = null, region = null)
         }
     }
 
     fun clearRegion() {
         viewModelScope.launch {
-            val areaNames = filterSettingsInteractor.getFilterSettings().areaName?.split(", ")
             val currentSettings = filterSettingsInteractor.getFilterSettings()
             val newSettings = currentSettings.copy(
-                areaId = null,
-                areaName = areaNames?.get(0)
+                regionId = null,
+                regionName = null
             )
             filterSettingsInteractor.saveFilterSettings(newSettings)
-            val currentState = _uiState.value
-            if (currentState is AreaUiState.Content) {
-                _uiState.value = currentState.copy(region = "")
-            }
+            _uiState.value = AreaUiState.Content(
+                country = currentSettings.countryName,
+                region = null
+            )
         }
     }
 }

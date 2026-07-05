@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.interactor.AreaInteractor
 import ru.practicum.android.diploma.domain.interactor.FilterSettingsInteractor
@@ -16,8 +17,7 @@ class RegionViewModel(
 ) : ViewModel() {
     private var _uiRegionState = MutableStateFlow<RegionUiState>(RegionUiState.Content())
     val uiRegionState: StateFlow<RegionUiState> = _uiRegionState
-    private var currentCountry: FilterArea? = null
-    private val allRegions = mutableListOf<FilterArea>()
+    private var countriesCache: List<FilterArea>? = null
 
     init {
         loadListOfRegions()
@@ -30,33 +30,18 @@ class RegionViewModel(
                 val result = areaInteractor.getAreas().first()
                 if (result.isSuccess) {
                     val listOfCountries = result.getOrNull() ?: emptyList()
-                    val settings = filterSettingsInteractor.getFilterSettings()
-                    val currentAreaName = settings.areaName
-                    val currentAreaId = settings.areaId
+                    countriesCache = listOfCountries
 
-                    if (currentAreaName == null) {
-                        listOfCountries.forEach { country ->
-                            allRegions.addAll(country.areas)
-                        }
-                        _uiRegionState.value = RegionUiState.Content(regions = sortedAndUpMoscow(allRegions))
+                    val settings = filterSettingsInteractor.getFilterSettings()
+                    val country = listOfCountries.find { it.id == settings.countryId }
+
+                    val regionsToShow = if (country != null) {
+                        country.areas.sortedBy { it.name }
                     } else {
-                        val countryName = currentAreaName.split(",").firstOrNull()?.trim()
-                        val country = if (currentAreaId != null) {
-                            listOfCountries.find { it.id == currentAreaId }
-                                ?: listOfCountries.find { it.name == countryName }
-                        } else {
-                            listOfCountries.find { it.name == countryName }
-                        }
-                        if (country != null) {
-                            currentCountry = country
-                            _uiRegionState.value = RegionUiState.Content(regions = sortedAndUpMoscow(country.areas))
-                        } else {
-                            listOfCountries.forEach { country ->
-                                allRegions.addAll(country.areas)
-                            }
-                            _uiRegionState.value = RegionUiState.Content(regions = sortedAndUpMoscow(allRegions))
-                        }
+                        listOfCountries.flatMap { it.areas }.sortedBy { it.name }
                     }
+
+                    _uiRegionState.value = RegionUiState.Content(regions = sortedAndUpMoscow(regionsToShow))
                 } else {
                     _uiRegionState.value = RegionUiState.Error("Ошибка при получении списка")
                 }
@@ -68,35 +53,39 @@ class RegionViewModel(
 
     fun onRegionSelected(region: FilterArea) {
         viewModelScope.launch {
-            try {
-                val result = areaInteractor.getAreas().first()
-                if (!result.isSuccess) {
-                    return@launch
-                }
-                val listOfCountries = result.getOrNull() ?: emptyList()
-                val currentArea = filterSettingsInteractor.getFilterSettings().areaName
+            val currentSettings = filterSettingsInteractor.getFilterSettings()
+            var countryId = currentSettings.countryId
+            var countryName = currentSettings.countryName
 
-                var countryName = ""
-                if (currentArea == null) {
-                    val country = listOfCountries.find { it.id == region.parentId }
-                    countryName = country?.name ?: ""
+            if (countryId == null || countryName == null) {
+                val countries = countriesCache
+                if (countries != null) {
+                    val country = countries.find { it.id == region.parentId }
+                    if (country != null) {
+                        countryId = country.id
+                        countryName = country.name
+                    }
                 } else {
-                    countryName = currentCountry?.name ?: ""
+                    val result = areaInteractor.getAreas().firstOrNull()
+                    if (result?.isSuccess == true) {
+                        val loadedCountries = result.getOrNull() ?: emptyList()
+                        countriesCache = loadedCountries
+                        val country = loadedCountries.find { it.id == region.parentId }
+                        if (country != null) {
+                            countryId = country.id
+                            countryName = country.name
+                        }
+                    }
                 }
-                val newAreaName = if (countryName.isNotEmpty()) {
-                    "$countryName, ${region.name}"
-                } else {
-                    region.name
-                }
-
-                filterSettingsInteractor.saveFilterSettings(
-                    filterSettingsInteractor.getFilterSettings().copy(
-                        areaId = region.id,
-                        areaName = newAreaName
-                    )
-                )
-            } catch (e: Exception) {
             }
+
+            val newSettings = currentSettings.copy(
+                countryId = countryId,
+                countryName = countryName,
+                regionId = region.id,
+                regionName = region.name
+            )
+            filterSettingsInteractor.saveFilterSettings(newSettings)
         }
     }
 

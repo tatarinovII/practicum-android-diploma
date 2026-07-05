@@ -112,9 +112,21 @@ fun FiltrationScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            val locationText = buildString {
+                if (!uiState.countryName.isNullOrEmpty()) {
+                    append(uiState.countryName)
+                    if (!uiState.regionName.isNullOrEmpty()) {
+                        append(", ")
+                        append(uiState.regionName)
+                    }
+                } else {
+                    append(uiState.regionName ?: "")
+                }
+            }
+
             FilterOptionRow(
                 label = stringResource(R.string.place_of_work),
-                value = uiState.areaName ?: "",
+                value = locationText,
                 onClick = {
                     navController.navigate(Route.AREA.name)
                 },

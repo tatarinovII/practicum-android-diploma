@@ -1,8 +1,10 @@
 package ru.practicum.android.diploma.domain.models
 
 data class FilterSettings(
-    val areaId: String? = null,
-    val areaName: String? = null,
+    val countryId: String? = null,
+    val countryName: String? = null,
+    val regionId: String? = null,
+    val regionName: String? = null,
     val industryId: Int? = null,
     val industryName: String? = null,
     val salary: Int? = null,

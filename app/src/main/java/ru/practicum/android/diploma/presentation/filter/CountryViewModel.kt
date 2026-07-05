@@ -35,12 +35,14 @@ class CountryViewModel(
 
     fun onCountrySelected(country: FilterArea) {
         viewModelScope.launch {
-            filterSettingsInteractor.saveFilterSettings(
-                filterSettingsInteractor.getFilterSettings().copy(
-                    areaId = country.id,
-                    areaName = country.name
-                )
+            val currentSettings = filterSettingsInteractor.getFilterSettings()
+            val newSettings = currentSettings.copy(
+                countryId = country.id,
+                countryName = country.name,
+                regionId = null,
+                regionName = null
             )
+            filterSettingsInteractor.saveFilterSettings(newSettings)
         }
     }
 
