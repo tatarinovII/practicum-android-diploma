@@ -5,8 +5,6 @@ import kotlinx.coroutines.flow.map
 import ru.practicum.android.diploma.data.NetworkClient
 import ru.practicum.android.diploma.data.db.dao.VacancyDao
 import ru.practicum.android.diploma.data.db.entity.VacancyFavoriteEntity
-import ru.practicum.android.diploma.data.dto.vacancy.VacancyDto
-import ru.practicum.android.diploma.data.dto.vacancydetail.VacancyDetailDto
 import ru.practicum.android.diploma.data.externalNavigator.ExternalNavigator
 import ru.practicum.android.diploma.data.mappers.toDomain
 import ru.practicum.android.diploma.data.network.ResponseCode.NOT_FOUND
@@ -31,19 +29,29 @@ class VacancyRepositoryImpl(
     override suspend fun searchVacancies(
         query: String,
         page: Int,
-        perPage: Int
+        perPage: Int,
+        areaId: String?,
+        industryId: Int?,
+        salary: Int?,
+        onlyWithSalary: Boolean
     ): Result<SearchResult> {
         val options = hashMapOf(
             "text" to query,
             "page" to page.toString(),
             "per_page" to perPage.toString()
         )
+        areaId?.let { options["area"] = it }
+        industryId?.let { options["industry"] = it.toString() }
+        salary?.let { options["salary"] = it.toString() }
+        if (onlyWithSalary) {
+            options["only_with_salary"] = "true"
+        }
         val request = VacancyRequest(options)
         val response = networkClient.requestVacancyResponse(request)
 
         return when (response.resultCode) {
             SUCCESS -> {
-                val vacancyDto = response as? VacancyDto
+                val vacancyDto = response.data
                 if (vacancyDto == null) {
                     Result.failure(Exception("Некорректный тип ответа"))
                 } else {
@@ -70,7 +78,7 @@ class VacancyRepositoryImpl(
         val response = networkClient.requestVacancyDetail(request)
         return when (response.resultCode) {
             SUCCESS -> {
-                val detailDto = response as? VacancyDetailDto
+                val detailDto = response.data
                 if (detailDto == null) {
                     Result.failure(Exception("Некорректный тип ответа"))
                 } else {

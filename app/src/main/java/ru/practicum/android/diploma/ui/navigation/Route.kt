@@ -5,7 +5,11 @@ enum class Route {
     FAVORITES,
     TEAM,
     FILTER,
-    VACANCY
+    VACANCY,
+    AREA,
+    COUNTRY,
+    REGION,
+    INDUSTRY
 }
 
 
